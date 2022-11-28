@@ -22,6 +22,7 @@ int FloodFalcon::doAction(boolean audio) {
       Serial.println("Wings down");
       StartPos(WINGS_DOWN);
       Tweet(CHEEP_CHEEP, audio);      
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);  
       break;
     case 1:  // UV 0
       Serial.println("Wings down");
