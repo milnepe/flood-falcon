@@ -55,7 +55,7 @@ const char* soft_version = "0.1.0";
 #define SFX_RST 4 // Sound board RST pin
 
 // 5 day forcast of uv and temperature data
-static uvData forecast[5];
+static floodWarning warning;
 
 WiFiClient client;
 
@@ -65,7 +65,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // Sound board connected to Serial1 - must be set to 9600 baud
 Adafruit_Soundboard sfx = Adafruit_Soundboard(&Serial1, NULL, SFX_RST);
 
-FloodFalcon myFalcon = FloodFalcon(&sfx, &pwm, forecast);
+FloodFalcon myFalcon = FloodFalcon(&sfx, &pwm, &warning);
 
 FloodFalconDisplay epd = FloodFalconDisplay(&myFalcon);
 
@@ -162,7 +162,7 @@ void loop() {
       playBackFlag = false;
 
       doUpdate();
-      lastReconnectAttempt = now;      
+      lastReconnectAttempt = now;
     }
   } else {  // Demo mode - reset to exit so everything re-initialises
     doDemo();
@@ -173,39 +173,39 @@ void doUpdate() {
   Serial.println("Updating...");
   getData();
   //  myFalcon.updateState();
-  //  epd.updateDisplay();
+  epd.updateDisplay();
   //  myFalcon.doAction(epd.audioOn);
   //  printData();
 }
 
 void doDemo() {
-  // Load demo data
-  memcpy(forecast[0].datestr, "2022-06-01Z", DATESTR_LEN - 1);
-  forecast[0].uv[0] = 0;
-  forecast[0].temp[0] = 20;
-  memcpy(forecast[1].datestr, "2022-06-02Z", DATESTR_LEN - 1);
-  forecast[1].uv[0] = 2;
-  forecast[1].temp[0] = 21;
-  memcpy(forecast[2].datestr, "2022-06-03Z", DATESTR_LEN - 1);
-  forecast[2].uv[0] = 4;
-  forecast[2].temp[0] = 22;
-  memcpy(forecast[3].datestr, "2022-06-04Z", DATESTR_LEN - 1);
-  forecast[3].uv[0] = 6;
-  forecast[3].temp[0] = 23;
-  memcpy(forecast[4].datestr, "2022-06-05Z", DATESTR_LEN - 1);
-  forecast[4].uv[0] = 8;
-  forecast[4].temp[0] = 24;
-
-  // Cycle through all states using uv value as trigger
-  for (int i = 0; i < 10; i += 2) {  // Set uv level
-    for (int j = 0; j < 8; ++j) {  // Set all fcst periods to uv level
-      forecast[0].uv[j] = i;
-    }
-    myFalcon.updateState();
-    epd.updateDisplay();
-    myFalcon.doAction(epd.audioOn);
-    delay(DEMO_DELAY);  // Delay between state change
-  }
+  //  // Load demo data
+  //  memcpy(warning[0].datestr, "2022-06-01Z", DATESTR_LEN - 1);
+  //  warning[0].uv[0] = 0;
+  //  warning[0].temp[0] = 20;
+  //  memcpy(warning[1].datestr, "2022-06-02Z", DATESTR_LEN - 1);
+  //  warning[1].uv[0] = 2;
+  //  warning[1].temp[0] = 21;
+  //  memcpy(warning[2].datestr, "2022-06-03Z", DATESTR_LEN - 1);
+  //  warning[2].uv[0] = 4;
+  //  warning[2].temp[0] = 22;
+  //  memcpy(warning[3].datestr, "2022-06-04Z", DATESTR_LEN - 1);
+  //  warning[3].uv[0] = 6;
+  //  warning[3].temp[0] = 23;
+  //  memcpy(warning[4].datestr, "2022-06-05Z", DATESTR_LEN - 1);
+  //  warning[4].uv[0] = 8;
+  //  warning[4].temp[0] = 24;
+  //
+  //  // Cycle through all states using uv value as trigger
+  //  for (int i = 0; i < 10; i += 2) {  // Set uv level
+  //    for (int j = 0; j < 8; ++j) {  // Set all warning periods to uv level
+  //      warning[0].uv[j] = i;
+  //    }
+  //    myFalcon.updateState();
+  //    epd.updateDisplay();
+  //    myFalcon.doAction(epd.audioOn);
+  //    delay(DEMO_DELAY);  // Delay between state change
+  //  }
 }
 
 int reconnectWiFi() {
@@ -273,11 +273,12 @@ void getData() {
     return;
   }
 
-  int items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"]; // 3
-  Serial.println(items_currentWarning_severityLevel);
+  warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"]; // 3
+  Serial.println(warning.items_currentWarning_severityLevel);
 
-  const char* items_description = doc["items"]["description"]; // "Tributaries between Dorchester and ...
-  Serial.println(items_description);
+  memcpy(warning.items_description, doc["items"]["description"].as<const char *>(), 128 - 1); // "Tributaries between Dorchester and ...
+  //const char* items_description = doc["items"]["description"]; // "Tributaries between Dorchester and ...
+  Serial.println(warning.items_description);
 
 
   // Close the connection to the server
@@ -285,12 +286,12 @@ void getData() {
 
   //  JsonArray periods = doc["SiteRep"]["DV"]["Location"]["Period"];
 
-  //  for (JsonObject fcst_period : periods) {
+  //  for (JsonObject warning_period : periods) {
   //    int i, j = 0;
-  //    memcpy(forecast[i].datestr, fcst_period["value"].as<const char *>(), DATESTR_LEN - 1); // "2022-06-15Z"
-  //    for (JsonObject item : fcst_period["Rep"].as<JsonArray>()) {
-  //      forecast[i].uv[j] = item["U"].as<char>();  // UV index
-  //      forecast[i].temp[j] = item["T"].as<char>();  // Temperature C
+  //    memcpy(warning[i].datestr, warning_period["value"].as<const char *>(), DATESTR_LEN - 1); // "2022-06-15Z"
+  //    for (JsonObject item : warning_period["Rep"].as<JsonArray>()) {
+  //      warning[i].uv[j] = item["U"].as<char>();  // UV index
+  //      warning[i].temp[j] = item["T"].as<char>();  // Temperature C
   //      ++j;
   //    }
   //    ++i;
@@ -315,19 +316,19 @@ void demo() {
   epd.demoOn = true;
 }
 
-void printData() {
-  for (int i = 0; i < 5; ++i) {
-    Serial.println(myFalcon.dow(i));
-    Serial.print("Max U: ");
-    Serial.print(myFalcon.getUVMax(i));
-    Serial.print(" Max T: ");
-    Serial.println(myFalcon.getTempMax(i));
-    for (int j = 0; j < 8; ++j) {
-      Serial.print("U: ");
-      Serial.print((int)forecast[i].uv[j]);
-      Serial.print(" T: ");
-      Serial.print((int)forecast[i].temp[j]);
-      Serial.println(" °C");
-    }
-  }
-}
+//void printData() {
+//  for (int i = 0; i < 5; ++i) {
+//    Serial.println(myFalcon.dow(i));
+//    Serial.print("Max U: ");
+//    Serial.print(myFalcon.getUVMax(i));
+//    Serial.print(" Max T: ");
+//    Serial.println(myFalcon.getTempMax(i));
+//    for (int j = 0; j < 8; ++j) {
+//      Serial.print("U: ");
+//      Serial.print((int)warning[i].uv[j]);
+//      Serial.print(" T: ");
+//      Serial.print((int)warning[i].temp[j]);
+//      Serial.println(" °C");
+//    }
+//  }
+//}

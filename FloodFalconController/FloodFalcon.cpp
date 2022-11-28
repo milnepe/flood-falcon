@@ -1,10 +1,10 @@
 #include "FloodFalcon.h"
 #include "dow.h"
 
-FloodFalcon::FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, uvData *fcst) {
+FloodFalcon::FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning) {
   _sfx = sfx;
   _pwm = pwm;
-  _fcst = fcst;
+  _warning = warning;
 }
 
 void FloodFalcon::init(int servo, uint16_t pos) {
@@ -82,30 +82,30 @@ int FloodFalcon::updateState() {
 }
 
 // Only return single digit UV
-int FloodFalcon::getUVMax(int day_idx) {
-  char max_uv = 0;
-  for (int i = 0; i < 8; ++i) {
-    char uv = _fcst[day_idx].uv[i];
-    if (uv > 9) {
-      uv = 9;
-    }
-    max_uv = max(max_uv, uv);
-  }
-  return (int)max_uv;
-}
+//int FloodFalcon::getUVMax(int day_idx) {
+//  char max_uv = 0;
+//  for (int i = 0; i < 8; ++i) {
+//    char uv = _warning[day_idx].uv[i];
+//    if (uv > 9) {
+//      uv = 9;
+//    }
+//    max_uv = max(max_uv, uv);
+//  }
+//  return (int)max_uv;
+//}
 
 // Return up to 2 digit positive temps
-int FloodFalcon::getTempMax(int day_idx) {
-  char max_temp = 0;
-  for (int i = 0; i < 8; ++i) {
-    char temp = _fcst[day_idx].temp[i];
-    if (temp > 99) {
-      temp = 99;
-    }
-    max_temp = max(max_temp, temp);
-  }
-  return (int)max_temp;
-}
+//int FloodFalcon::getTempMax(int day_idx) {
+//  char max_temp = 0;
+//  for (int i = 0; i < 8; ++i) {
+//    char temp = _warning[day_idx].temp[i];
+//    if (temp > 99) {
+//      temp = 99;
+//    }
+//    max_temp = max(max_temp, temp);
+//  }
+//  return (int)max_temp;
+//}
 
 void FloodFalcon::StartPos(uint16_t start_pos) {
   // Move wings to start position
@@ -171,9 +171,9 @@ const char* FloodFalcon::dow(int i) {
     "Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"
   };
 
-  uint16_t yyyy = getYearInt(_fcst[i].datestr);
-  uint8_t mm = getMonthInt(_fcst[i].datestr);
-  uint8_t dd = getDayInt(_fcst[i].datestr);
+  uint16_t yyyy = getYearInt(_warning[i].datestr);
+  uint8_t mm = getMonthInt(_warning[i].datestr);
+  uint8_t dd = getDayInt(_warning[i].datestr);
   int n = dayOfWeek(yyyy, mm, dd);
 
   return dname[n];

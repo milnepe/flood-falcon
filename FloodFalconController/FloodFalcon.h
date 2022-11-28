@@ -26,18 +26,17 @@
 
 enum flap_speeds {VFAST = 1, FAST, SLOW, VSLOW};
 
-struct uvData {
-    //char date[DATESTR_LEN];
+struct floodWarning {
     char datestr[DATESTR_LEN] = {'\0'};
-    char uv[8] = {0};
-    char temp[8] = {0};
+    int items_currentWarning_severityLevel = 0;
+    char items_description[128] = {'\0'};
 };
 
 class FloodFalcon {
   public:
-    uvData * _fcst; // 5 days worth of data
+    floodWarning * _warning; // 5 days worth of data
     int state = 0;
-    FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, uvData *fcst);
+    FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning);
  private:
     Adafruit_PWMServoDriver *_pwm;
     Adafruit_Soundboard *_sfx;
