@@ -5,7 +5,7 @@
 #include "epd2in9_V2.h"
 #include "epdpaint.h"
 #include "img/rslogo.h"
-#include "img/sun_1.h"
+#include "img/flood_alert.h"
 #include "img/sun_2.h"
 #include "img/sun_3.h"
 #include "img/sun_4.h"

@@ -27,6 +27,8 @@
 
 enum flap_speeds {VFAST = 1, FAST, SLOW, VSLOW};
 
+enum warning_levels {INIT, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER};
+
 struct floodWarning {
     char datestr[DATESTR_LEN] = {'\0'};
     int items_currentWarning_severityLevel = 0;
@@ -48,8 +50,6 @@ class FloodFalcon {
     const char* dow(int i);
     int doAction(boolean audio);
     int updateState();
-    int getUVMax(int day_idx);
-    int getTempMax(int day_idx);
     void StartPos(uint16_t start_pos);
     void Flap(uint16_t down_pos, uint16_t up_pos, int speed_idx, int flaps);
     void PassOut(uint16_t end_pos, int speed_idx);
