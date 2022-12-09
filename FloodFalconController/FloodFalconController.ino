@@ -15,18 +15,18 @@
   #define SECRET_PASS "YOUR_WIFI_PASSWORD"
 
   Set the interval between looks-ups by adjusting:
-  #define FCST_INTERVAL 60 * 60000  // 60 mins
+  #define FCST_INTERVAL 60 * 60 * 1000  // 60 mins
 
   Set the demo mode interval by adjusting:
   #define DEMO_DELAY 10 * 1000  // 10 sec
 
   Servo settings will need to be adjusted for your Falcon - they are
-  found in "FloodFalcon,h"
+  found in "FloodFalcon.h"
 
   Audio clips are in ./audio - connect your sound board to your PC
   and copy the clips to the mounted drive
 
-  Hold down demo button to enter Demo Mode durring reset
+  Hold down demo button to enter Demo Mode during reset
 
   Author: Peter Milne
   Date: 28 Nov 2022
@@ -47,14 +47,14 @@
 const char* soft_version = "0.1.0";
 
 #define FCST_INTERVAL 15 * 60 * 1000  // 15 mins
-#define DEMO_DELAY 10 * 1000  // 10 sec
+#define DEMO_DELAY 10 * 1000          // 10 sec
 
-#define SERVO 0  // Flapping servo
-#define SERVO_FREQ 50 // Analog servos run at ~50 Hz
+#define SERVO 0        // Flapping servo
+#define SERVO_FREQ 50  // Analog servos run at ~50 Hz
 
-#define SFX_RST 4 // Sound board RST pin
+#define SFX_RST 4  // Sound board RST pin
 
-// 5 day forcast of uv and temperature data
+// Flood warning data
 static floodWarning warning;
 
 WiFiClient client;
@@ -81,8 +81,8 @@ const int lButton = 3;
 const int dButton = 9;
 
 EasyButton rightButton(rButton);  // RH button
-EasyButton leftButton(lButton);  // LH button
-EasyButton demoButton(dButton);  // External demo button
+EasyButton leftButton(lButton);   // LH button
+EasyButton demoButton(dButton);   // External demo button
 
 void setup() {
   pinMode(wifiLed, OUTPUT);
@@ -91,25 +91,25 @@ void setup() {
   // Initialize Serial Port
   Serial.begin(115200);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ;  // wait for serial port to connect. Needed for native USB port only
   }
   delay(2000);
 
   // Serial 1 used for sound board at 9600 baud
   Serial1.begin(9600);
   while (!Serial1) {
-    ; // wait for serial port to connect
+    ;  // wait for serial port to connect
   }
   Serial.println("Serial1 attached");
 
   // Initialize buttons
   rightButton.begin();
-  rightButton.onPressed(playback);  // Short press triggers playback
+  rightButton.onPressed(playback);        // Short press triggers playback
   rightButton.onPressedFor(2000, audio);  // Long press toggles audio
   leftButton.begin();
   leftButton.onPressed(demo);  // Short press for demo
   demoButton.begin();
-  demoButton.onPressed(demo); // Short press external button for demo
+  demoButton.onPressed(demo);  // Short press external button for demo
   // Press reset button (middle) to exit demo
 
   // Setup display and show greeting
@@ -123,7 +123,7 @@ void setup() {
   delay(1000);
 
   myFalcon.init(SERVO, WINGS_DOWN);  // Set statrting posture
-  myFalcon.doAction(epd.audioOn);  // Trigger intro action
+  myFalcon.doAction(epd.audioOn);    // Trigger intro action
 
   leftButton.read();
   demoButton.read();
@@ -175,7 +175,7 @@ void doUpdate() {
   //  myFalcon.updateState();
   epd.updateDisplay();
   //  myFalcon.doAction(epd.audioOn);
-  //  printData();
+  printData();
 }
 
 void doDemo() {
@@ -240,7 +240,7 @@ void getData() {
   client.println();
 
   // Check status code
-  char status[32] = {0};
+  char status[32] = { 0 };
   client.readBytesUntil('\r', status, sizeof(status));
   // should be "HTTP/1.0 200 OK"
   if (memcmp(status + 9, "200 OK", 6) != 0) {
@@ -254,9 +254,6 @@ void getData() {
   client.find("\r\n\r\n");
 
   // Stream& input;
-
-  // Stream& input;
-
   StaticJsonDocument<64> filter;
 
   JsonObject filter_items = filter.createNestedObject("items");
@@ -273,13 +270,10 @@ void getData() {
     return;
   }
 
-  warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"]; // 3
-  Serial.println(warning.items_currentWarning_severityLevel);
+  // Update warning struct
+  warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
 
-  memcpy(warning.items_description, doc["items"]["description"].as<const char *>(), 128 - 1); // "Tributaries between Dorchester and ...
-  //const char* items_description = doc["items"]["description"]; // "Tributaries between Dorchester and ...
-  Serial.println(warning.items_description);
-
+  memcpy(warning.items_description, doc["items"]["description"].as<const char*>(), DESCSTR_LEN - 1);  // "Tributaries between Dorchester and ...
 
   // Close the connection to the server
   client.stop();
@@ -307,7 +301,7 @@ void playback() {
 
 void audio() {
   Serial.println("Audio button pressed!");
-  epd.audioOn = ! epd.audioOn;
+  epd.audioOn = !epd.audioOn;
   updateDisplayFlag = true;
 }
 
@@ -316,19 +310,10 @@ void demo() {
   epd.demoOn = true;
 }
 
-//void printData() {
-//  for (int i = 0; i < 5; ++i) {
-//    Serial.println(myFalcon.dow(i));
-//    Serial.print("Max U: ");
-//    Serial.print(myFalcon.getUVMax(i));
-//    Serial.print(" Max T: ");
-//    Serial.println(myFalcon.getTempMax(i));
-//    for (int j = 0; j < 8; ++j) {
-//      Serial.print("U: ");
-//      Serial.print((int)warning[i].uv[j]);
-//      Serial.print(" T: ");
-//      Serial.print((int)warning[i].temp[j]);
-//      Serial.println(" °C");
-//    }
-//  }
-//}
+void printData() {
+  Serial.print("Flood Area: ");
+  Serial.println(warning.items_description);
+  Serial.print("Warning Level: ");  
+  Serial.println(warning.items_currentWarning_severityLevel);
+
+}

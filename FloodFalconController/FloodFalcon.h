@@ -23,18 +23,19 @@
 #define EXTRA_PROTECTION 5      // T05.ogg
 
 #define DATESTR_LEN 12  // "2022-06-15Z"
+#define DESCSTR_LEN 128 // Flood area description
 
 enum flap_speeds {VFAST = 1, FAST, SLOW, VSLOW};
 
 struct floodWarning {
     char datestr[DATESTR_LEN] = {'\0'};
     int items_currentWarning_severityLevel = 0;
-    char items_description[128] = {'\0'};
+    char items_description[DESCSTR_LEN] = {'\0'};
 };
 
 class FloodFalcon {
   public:
-    floodWarning * _warning; // 5 days worth of data
+    floodWarning * _warning; // Flood warning data
     int state = 0;
     FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning);
  private:
