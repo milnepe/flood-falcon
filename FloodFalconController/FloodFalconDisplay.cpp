@@ -1,4 +1,5 @@
 #include "FloodFalconDisplay.h"
+#include "arduino_secrets.h"
 
 void FloodFalconDisplay::initDisplay(void) {
   if (_epd.Init() != 0) {
@@ -55,7 +56,7 @@ void FloodFalconDisplay::showGreeting(void) {
 
 void FloodFalconDisplay::updateDisplay() {
   Serial.println("Updating display...");
-  int severityLevel = (_falcon->_warning->items_currentWarning_severityLevel);
+  int severityLevel = _falcon->_warning->items_currentWarning_severityLevel;
   //  char single_digit[] = {'0', '\0'};
   //  char double_digit[] = {'0', '0', '\0'};
   //  char three_digit[] = {'0', '/', '0', '\0'};
@@ -74,10 +75,10 @@ void FloodFalconDisplay::updateDisplay() {
       _epd.SetFrameMemory_Base(epd_flood_alert);
       break;
     case SEVERE_FLOOD_WARNING:
-      _epd.SetFrameMemory_Base(epd_flood_alert);
+      _epd.SetFrameMemory_Base(epd_flood_warning_severe);
       break;
     case FLOOD_WARNING:
-      _epd.SetFrameMemory_Base(epd_flood_alert);
+      _epd.SetFrameMemory_Base(epd_flood_warning);
       break;
     case FLOOD_ALERT:
       _epd.SetFrameMemory_Base(epd_flood_alert);
@@ -87,39 +88,44 @@ void FloodFalconDisplay::updateDisplay() {
   }
 
   _epd.DisplayFrame();
-  //
-  //  // Static text
-  //  _paint.SetWidth(120);
-  //  _paint.SetHeight(40);
-  //  _paint.SetRotate(ROTATE_180);
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, "UV Max", &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 140, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, "Temp(C)", &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 120, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, "Burn(t)", &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 100, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, _falcon->dow(1), &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 80, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, _falcon->dow(2), &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 60, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, _falcon->dow(3), &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _paint.Clear(UNCOLORED);
-  //  _paint.DrawStringAt(0, 0, _falcon->dow(4), &Font16, COLORED);
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
+
+  // Static text
+  _paint.SetWidth(120);
+  _paint.SetHeight(40);
+  _paint.SetRotate(ROTATE_180);
+
+  // _paint.Clear(UNCOLORED);
+  // _paint.DrawStringAt(0, 0, "UV Max", &Font16, COLORED);
+  // _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 140, _paint.GetWidth(), _paint.GetHeight());
+
+  _paint.Clear(UNCOLORED);
+  _paint.DrawStringAt(0, 0, LINE_1, &Font16, COLORED);
+  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 120, _paint.GetWidth(), _paint.GetHeight());
+
+  _paint.Clear(UNCOLORED);
+  _paint.DrawStringAt(0, 0, LINE_2, &Font16, COLORED);
+  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 100, _paint.GetWidth(), _paint.GetHeight());
+  
+   _paint.Clear(UNCOLORED);
+   _paint.DrawStringAt(0, 0, LINE_3, &Font16, COLORED);
+   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 80, _paint.GetWidth(), _paint.GetHeight());
+  
+   _paint.Clear(UNCOLORED);
+   _paint.DrawStringAt(0, 0, LINE_4, &Font16, COLORED);
+   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 60, _paint.GetWidth(), _paint.GetHeight());
+  
+   _paint.Clear(UNCOLORED);
+   _paint.DrawStringAt(0, 0, LINE_5, &Font16, COLORED);
+   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
+  
+   _paint.Clear(UNCOLORED);
+   _paint.DrawStringAt(0, 0, LINE_6, &Font16, COLORED);
+   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
+  
+     _paint.Clear(UNCOLORED);
+   _paint.DrawStringAt(0, 0, LINE_7, &Font16, COLORED);
+   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 10, _paint.GetWidth(), _paint.GetHeight());
+  
   //
   //  // Dynamic text
   //  _paint.SetWidth(24);
@@ -240,7 +246,7 @@ void FloodFalconDisplay::updateDisplay() {
   //  else {
   //    _paint.DrawStringAt(0, 0, "", &Font16, COLORED);
   //  }
-  //  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 0, _paint.GetWidth(), _paint.GetHeight());
-  //
-  //  _epd.DisplayFrame_Partial();
+  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 0, _paint.GetWidth(), _paint.GetHeight());
+
+  _epd.DisplayFrame_Partial();
 }

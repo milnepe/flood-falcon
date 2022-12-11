@@ -1,5 +1,5 @@
 /*
-  Arduino Nano 33 IoT client for Gov.co.uk Flood Waring Service
+  Arduino Nano 33 IoT client for Gov.co.uk Flood Warning Service
 
   Install the following libraries using the Arduino Libary Manager:
   Arduino WiFiNINA https://github.com/arduino-libraries/WiFiNINA
@@ -272,6 +272,7 @@ void getData() {
 
   // Update warning struct
   warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
+  warning.items_currentWarning_severityLevel = 1;                                                // mock level
 
   memcpy(warning.items_description, doc["items"]["description"].as<const char*>(), DESCSTR_LEN - 1);  // "Tributaries between Dorchester and ...
 
@@ -313,7 +314,8 @@ void demo() {
 void printData() {
   Serial.print("Flood Area: ");
   Serial.println(warning.items_description);
-  Serial.print("Warning Level: ");  
-  Serial.println(warning.items_currentWarning_severityLevel);
 
+
+  Serial.print("Warning Level: ");
+  Serial.println(warning.items_currentWarning_severityLevel);
 }

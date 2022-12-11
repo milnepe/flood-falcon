@@ -6,8 +6,8 @@
 #include "epdpaint.h"
 #include "img/rslogo.h"
 #include "img/flood_alert.h"
-#include "img/sun_2.h"
-#include "img/sun_3.h"
+#include "img/flood_warning.h"
+#include "img/flood_warning_severe.h"
 #include "img/sun_4.h"
 #include "img/sun_5.h"
 
