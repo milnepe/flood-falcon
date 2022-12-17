@@ -179,33 +179,14 @@ void doUpdate() {
 }
 
 void doDemo() {
-  //  // Load demo data
-  //  memcpy(warning[0].datestr, "2022-06-01Z", DATESTR_LEN - 1);
-  //  warning[0].uv[0] = 0;
-  //  warning[0].temp[0] = 20;
-  //  memcpy(warning[1].datestr, "2022-06-02Z", DATESTR_LEN - 1);
-  //  warning[1].uv[0] = 2;
-  //  warning[1].temp[0] = 21;
-  //  memcpy(warning[2].datestr, "2022-06-03Z", DATESTR_LEN - 1);
-  //  warning[2].uv[0] = 4;
-  //  warning[2].temp[0] = 22;
-  //  memcpy(warning[3].datestr, "2022-06-04Z", DATESTR_LEN - 1);
-  //  warning[3].uv[0] = 6;
-  //  warning[3].temp[0] = 23;
-  //  memcpy(warning[4].datestr, "2022-06-05Z", DATESTR_LEN - 1);
-  //  warning[4].uv[0] = 8;
-  //  warning[4].temp[0] = 24;
-  //
-  //  // Cycle through all states using uv value as trigger
-  //  for (int i = 0; i < 10; i += 2) {  // Set uv level
-  //    for (int j = 0; j < 8; ++j) {  // Set all warning periods to uv level
-  //      warning[0].uv[j] = i;
-  //    }
-  //    myFalcon.updateState();
-  //    epd.updateDisplay();
-  //    myFalcon.doAction(epd.audioOn);
-  //    delay(DEMO_DELAY);  // Delay between state change
-  //  }
+  //  Cycle through all states
+  for (int i = 0; i < 4; i++) {
+    warning.items_currentWarning_severityLevel = i;
+    myFalcon.updateState();
+    epd.updateDisplay();
+    myFalcon.doAction(epd.audioOn);
+    delay(DEMO_DELAY);  // Delay between state change
+  }
 }
 
 int reconnectWiFi() {
@@ -272,7 +253,7 @@ void getData() {
 
   // Update warning struct
   warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
-  warning.items_currentWarning_severityLevel = 1;                                                // mock level
+  //warning.items_currentWarning_severityLevel = 1; // mock level
 
   memcpy(warning.items_description, doc["items"]["description"].as<const char*>(), DESCSTR_LEN - 1);  // "Tributaries between Dorchester and ...
 

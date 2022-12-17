@@ -50,7 +50,8 @@ int FloodFalcon::doAction(boolean audio) {
 // Sets the rules for changing state
 int FloodFalcon::updateState() {
   Serial.println("Updating state...");
-  return _warning->items_currentWarning_severityLevel;
+  state = _warning->items_currentWarning_severityLevel;
+  return state;
 }
 
 void FloodFalcon::StartPos(uint16_t start_pos) {

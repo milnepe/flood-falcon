@@ -5,11 +5,12 @@
 #include "epd2in9_V2.h"
 #include "epdpaint.h"
 #include "img/rslogo.h"
-#include "img/flood_alert.h"
-#include "img/flood_warning.h"
-#include "img/flood_warning_severe.h"
-#include "img/sun_4.h"
-#include "img/sun_5.h"
+
+#include "img/flood_alert_none.h"  // Level 0
+#include "img/flood_warning_severe.h"  // Level 1
+#include "img/flood_warning.h"  // Level 2
+#include "img/flood_alert.h"  // Level 3
+#include "img/flood_warning_no_longer.h"  // Lvel 4
 
 #define COLORED     0
 #define UNCOLORED   1

@@ -72,7 +72,7 @@ void FloodFalconDisplay::updateDisplay() {
   delay(500);
   switch (severityLevel) {
     case INIT:
-      _epd.SetFrameMemory_Base(epd_flood_alert);
+      _epd.SetFrameMemory_Base(epd_flood_alert_none);
       break;
     case SEVERE_FLOOD_WARNING:
       _epd.SetFrameMemory_Base(epd_flood_warning_severe);
@@ -84,7 +84,7 @@ void FloodFalconDisplay::updateDisplay() {
       _epd.SetFrameMemory_Base(epd_flood_alert);
       break;
     case NO_LONGER:
-      _epd.SetFrameMemory_Base(epd_flood_alert);
+      _epd.SetFrameMemory_Base(epd_flood_warning_no_longer);
   }
 
   _epd.DisplayFrame();
