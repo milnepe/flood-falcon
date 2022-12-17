@@ -84,6 +84,8 @@ EasyButton rightButton(rButton);  // RH button
 EasyButton leftButton(lButton);   // LH button
 EasyButton demoButton(dButton);   // External demo button
 
+int demo_state = NONE;
+
 void setup() {
   pinMode(wifiLed, OUTPUT);
   digitalWrite(wifiLed, LOW);
@@ -179,14 +181,32 @@ void doUpdate() {
 }
 
 void doDemo() {
-  //  Cycle through all states
-  for (int i = 0; i < 4; i++) {
-    warning.items_currentWarning_severityLevel = i;
-    myFalcon.updateState();
-    epd.updateDisplay();
-    myFalcon.doAction(epd.audioOn);
-    delay(DEMO_DELAY);  // Delay between state change
+  warning.items_currentWarning_severityLevel = demo_state;
+  myFalcon.updateState();
+  epd.updateDisplay();  
+  myFalcon.doAction(epd.audioOn);
+
+
+  switch (demo_state) {
+    case NONE:
+      demo_state = FLOOD_ALERT;
+      break;
+    case SEVERE_FLOOD_WARNING:
+      demo_state = NO_LONGER;
+      break;
+    case FLOOD_WARNING:
+      demo_state = SEVERE_FLOOD_WARNING;
+      break;
+    case FLOOD_ALERT:
+      demo_state = FLOOD_WARNING;
+      break;
+    case NO_LONGER:
+      demo_state = NONE;
+      break;      
+    default:
+      break;
   }
+  delay(DEMO_DELAY);  // Delay between state change
 }
 
 int reconnectWiFi() {

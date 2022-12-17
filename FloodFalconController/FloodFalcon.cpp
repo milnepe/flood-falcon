@@ -21,28 +21,27 @@ int FloodFalcon::doAction(boolean audio) {
     case NONE:
       Serial.println("Wings up a bit, very slowly");
       Tweet(NONE, audio);
-      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 10);
       break;
     case SEVERE_FLOOD_WARNING:
       Serial.println("Wings up alot, very fast");
-      StartPos(WINGS_DOWN);
-      Flap(WINGS_DOWN, WINGS_UP_A_LOT, VFAST, 4);
       Tweet(SEVERE_FLOOD_WARNING, audio);
+      Flap(WINGS_DOWN, WINGS_UP_A_LOT, VFAST, 10);      
       break;
     case FLOOD_WARNING:
       Serial.println("Wings up a bit, fast");
-      Flap(WINGS_DOWN, WINGS_UP_A_BIT, FAST, 4);
       Tweet(FLOOD_WARNING, audio);
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, FAST, 10);      
       break;
     case FLOOD_ALERT:
       Serial.println("Wings down, wings up a bit");
-      Flap(WINGS_DOWN, WINGS_UP_A_BIT, SLOW, 3);
       Tweet(FLOOD_ALERT, audio);
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, SLOW, 10);      
       break;
     case NO_LONGER:
       Serial.println("Wings down, wings up a bit, slowly");
-      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);
       Tweet(NO_LONGER, audio);
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 10);      
       break;
     case INIT:
       Serial.println("Wings down");
@@ -56,7 +55,7 @@ int FloodFalcon::doAction(boolean audio) {
 // Sets the rules for changing state
 int FloodFalcon::updateState() {
   Serial.println("Updating state...");
-  _warning->items_currentWarning_severityLevel = 1;  // mock  
+  //_warning->items_currentWarning_severityLevel = 1;  // mock  
   state = _warning->items_currentWarning_severityLevel;
   return state;
 }
