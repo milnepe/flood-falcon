@@ -10,7 +10,7 @@ FloodFalcon::FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm,
 void FloodFalcon::init(int servo, uint16_t pos) {
   _servo = servo;
   StartPos(pos);
-  state = 0;
+  state = INIT;
 }
 
 int FloodFalcon::doAction(boolean audio) {
@@ -18,31 +18,37 @@ int FloodFalcon::doAction(boolean audio) {
   Serial.print("State: ");
   Serial.println(state);
   switch (state) {
-    case INIT:
-      Serial.println("Wings down");
-      StartPos(WINGS_DOWN);
-      Tweet(CHEEP_CHEEP, audio);
+    case NONE:
+      Serial.println("Wings up a bit, very slowly");
+      Tweet(NONE, audio);
       Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);
       break;
     case SEVERE_FLOOD_WARNING:
-      Serial.println("Wings down");
+      Serial.println("Wings up alot, very fast");
       StartPos(WINGS_DOWN);
-      Tweet(NO_PROTECTION_A, audio);
+      Flap(WINGS_DOWN, WINGS_UP_A_LOT, VFAST, 4);
+      Tweet(SEVERE_FLOOD_WARNING, audio);
       break;
     case FLOOD_WARNING:
-      Serial.println("Wings down");
-      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);
-      Tweet(NO_PROTECTION_B, audio);
+      Serial.println("Wings up a bit, fast");
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, FAST, 4);
+      Tweet(FLOOD_WARNING, audio);
       break;
     case FLOOD_ALERT:
       Serial.println("Wings down, wings up a bit");
       Flap(WINGS_DOWN, WINGS_UP_A_BIT, SLOW, 3);
-      Tweet(SOME_PROTECTION, audio);
+      Tweet(FLOOD_ALERT, audio);
       break;
     case NO_LONGER:
-      Serial.println("Wings down, wings up a lot");
-      Flap(WINGS_DOWN, WINGS_UP_A_LOT, FAST, 4);
-      Tweet(PROTECTION_ESSENTIAL, audio);
+      Serial.println("Wings down, wings up a bit, slowly");
+      Flap(WINGS_DOWN, WINGS_UP_A_BIT, VSLOW, 3);
+      Tweet(NO_LONGER, audio);
+      break;
+    case INIT:
+      Serial.println("Wings down");
+      StartPos(WINGS_DOWN);
+      Tweet(INIT, audio);
+      break;
   }
   return state;
 }
@@ -50,6 +56,7 @@ int FloodFalcon::doAction(boolean audio) {
 // Sets the rules for changing state
 int FloodFalcon::updateState() {
   Serial.println("Updating state...");
+  _warning->items_currentWarning_severityLevel = 1;  // mock  
   state = _warning->items_currentWarning_severityLevel;
   return state;
 }

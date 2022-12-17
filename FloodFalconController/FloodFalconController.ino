@@ -100,6 +100,9 @@ void setup() {
   while (!Serial1) {
     ;  // wait for serial port to connect
   }
+  Serial.print("Starting client version: ");
+  Serial.println(soft_version);
+
   Serial.println("Serial1 attached");
 
   // Initialize buttons
@@ -131,8 +134,6 @@ void setup() {
     epd.demoOn = true;
   }
 
-  Serial.print("Starting client version: ");
-  Serial.println(soft_version);
   delay(12000);
 }
 
@@ -161,6 +162,7 @@ void loop() {
       updateDisplayFlag = false;
       playBackFlag = false;
 
+      getData();
       doUpdate();
       lastReconnectAttempt = now;
     }
@@ -170,11 +172,9 @@ void loop() {
 }
 
 void doUpdate() {
-  Serial.println("Updating...");
-  getData();
-  //  myFalcon.updateState();
+  myFalcon.updateState();
+  myFalcon.doAction(epd.audioOn);
   epd.updateDisplay();
-  //  myFalcon.doAction(epd.audioOn);
   printData();
 }
 

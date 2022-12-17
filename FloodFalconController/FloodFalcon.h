@@ -15,19 +15,19 @@
 #define DEAD_POS 350  // Min position
 
 // Audio track numbers
-#define CHEEP_CHEEP 0           // T00.ogg
-#define NO_PROTECTION_A 1       // T01.ogg
-#define NO_PROTECTION_B 2       // T02.ogg
-#define SOME_PROTECTION 3       // T03.ogg
-#define PROTECTION_ESSENTIAL 4  // T04.ogg
-#define EXTRA_PROTECTION 5      // T05.ogg
+// #define NONE 0                   // T00.ogg
+// #define SEVERE_FLOOD_WARNING 1   // T01.ogg
+// #define FLOOD_WARNING 2          // T02.ogg
+// #define FLOOD_ALERT 3            // T03.ogg
+// #define NO_LONGER 4              // T04.ogg
+// #define INIT 5                   // T05.ogg
 
 #define DATESTR_LEN 12  // "2022-06-15Z"
 #define DESCSTR_LEN 128 // Flood area description
 
-enum flap_speeds {VFAST = 1, FAST, SLOW, VSLOW};
+enum flap_speeds {VFAST = 1, FAST = 2, SLOW = 4, VSLOW = 8};
 
-enum warning_levels {INIT, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER};
+enum warning_levels {NONE, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER, INIT};
 
 struct floodWarning {
     char datestr[DATESTR_LEN] = {'\0'};
@@ -38,7 +38,7 @@ struct floodWarning {
 class FloodFalcon {
   public:
     floodWarning * _warning; // Flood warning data
-    int state = 0;
+    int state;
     FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning);
  private:
     Adafruit_PWMServoDriver *_pwm;
