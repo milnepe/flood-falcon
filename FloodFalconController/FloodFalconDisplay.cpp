@@ -48,12 +48,6 @@ void FloodFalconDisplay::showGreeting(void) {
   _epd.DisplayFrame_Partial();
 }
 
-// void FloodFalconDisplay::updateDisplay() {
-//   Serial.println("Updating display...");
-//   int severityLevel = (_falcon->_warning->items_currentWarning_severityLevel);
-//   Serial.println(severityLevel);
-// }
-
 void FloodFalconDisplay::updateDisplay() {
   Serial.println("Updating display...");
   int severityLevel = _falcon->_warning->items_currentWarning_severityLevel;
@@ -118,11 +112,11 @@ void FloodFalconDisplay::updateDisplay() {
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 60, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_5, &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, "Updated", &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_6, &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, "2022-12-19", &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);

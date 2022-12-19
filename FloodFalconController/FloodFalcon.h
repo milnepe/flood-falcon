@@ -47,7 +47,6 @@ class FloodFalcon {
     uint16_t _pulselen = WINGS_START;
  public:
     void init(int servo, uint16_t pos);
-    const char* dow(int i);
     int doAction(boolean audio);
     int updateState();
     void StartPos(uint16_t start_pos);

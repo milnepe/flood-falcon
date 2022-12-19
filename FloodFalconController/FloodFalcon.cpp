@@ -1,5 +1,4 @@
 #include "FloodFalcon.h"
-#include "dow.h"
 
 FloodFalcon::FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning) {
   _sfx = sfx;
@@ -116,18 +115,4 @@ void FloodFalcon::Tweet(uint8_t track, boolean audio = true) {
       ;
     }
   }
-}
-
-// Return day number as day of week - day 6 (Thu)
-const char *FloodFalcon::dow(int i) {
-  static const char *dname[] = {
-    "Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"
-  };
-
-  uint16_t yyyy = getYearInt(_warning[i].datestr);
-  uint8_t mm = getMonthInt(_warning[i].datestr);
-  uint8_t dd = getDayInt(_warning[i].datestr);
-  int n = dayOfWeek(yyyy, mm, dd);
-
-  return dname[n];
 }
