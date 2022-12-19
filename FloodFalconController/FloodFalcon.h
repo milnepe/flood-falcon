@@ -19,7 +19,7 @@
 // #define SEVERE_FLOOD_WARNING 1   // T01.ogg
 // #define FLOOD_WARNING 2          // T02.ogg
 // #define FLOOD_ALERT 3            // T03.ogg
-// #define NO_LONGER 4              // T04.ogg
+// #define FLOOD_WARNING_REMOVED 4              // T04.ogg
 // #define INIT 5                   // T05.ogg
 
 #define DATESTR_LEN 12  // "2022-06-15Z"

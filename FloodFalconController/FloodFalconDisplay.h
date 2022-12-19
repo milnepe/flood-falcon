@@ -6,11 +6,12 @@
 #include "epdpaint.h"
 #include "img/rslogo.h"
 
-#include "img/flood_alert_none.h"         // Level 0
+// Image converter https://javl.github.io/image2cpp/ 
+#include "img/flood_warning_removed.h"    // Level 0
 #include "img/flood_warning_severe.h"     // Level 1
 #include "img/flood_warning.h"            // Level 2
 #include "img/flood_alert.h"              // Level 3
-#include "img/flood_warning_no_longer.h"  // Level 4
+#include "img/flood_warning_removed.h"    // Level 4
 
 #define COLORED     0
 #define UNCOLORED   1
