@@ -164,7 +164,6 @@ void loop() {
       updateDisplayFlag = false;
       playBackFlag = false;
 
-      getData();
       doUpdate();
       lastReconnectAttempt = now;
     }
@@ -174,6 +173,7 @@ void loop() {
 }
 
 void doUpdate() {
+  getData();
   myFalcon.updateState();
   myFalcon.doAction(epd.audioOn);
   epd.updateDisplay();
@@ -181,9 +181,9 @@ void doUpdate() {
 }
 
 void doDemo() {
-  warning.items_currentWarning_severityLevel = demo_state;
+  warning.severityLevel = demo_state;
   myFalcon.updateState();
-  epd.updateDisplay();  
+  epd.updateDisplay();
   myFalcon.doAction(epd.audioOn);
 
 
@@ -202,7 +202,7 @@ void doDemo() {
       break;
     case NO_LONGER:
       demo_state = NONE;
-      break;      
+      break;
     default:
       break;
   }
@@ -255,13 +255,14 @@ void getData() {
   client.find("\r\n\r\n");
 
   // Stream& input;
-  StaticJsonDocument<64> filter;
+  StaticJsonDocument<128> filter;
 
   JsonObject filter_items = filter.createNestedObject("items");
   filter_items["currentWarning"]["severityLevel"] = true;
-  filter_items["description"] = true;
+  filter_items["currentWarning"]["floodAreaID"] = true;
+  filter_items["currentWarning"]["timeRaised"] = true; 
 
-  StaticJsonDocument<192> doc;
+  StaticJsonDocument<1024> doc;
 
   DeserializationError error = deserializeJson(doc, client, DeserializationOption::Filter(filter));
 
@@ -272,10 +273,12 @@ void getData() {
   }
 
   // Update warning struct
-  warning.items_currentWarning_severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
+  warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
   //warning.items_currentWarning_severityLevel = 1; // mock level
 
-  memcpy(warning.items_description, doc["items"]["description"].as<const char*>(), DESCSTR_LEN - 1);  // "Tributaries between Dorchester and ...
+  memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
+
+  memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char *>(), DATESTR_LEN - 1); // "2022-12-19T15:20:31"
 
   // Close the connection to the server
   client.stop();
@@ -284,7 +287,7 @@ void getData() {
 
   //  for (JsonObject warning_period : periods) {
   //    int i, j = 0;
-  //    memcpy(warning[i].datestr, warning_period["value"].as<const char *>(), DATESTR_LEN - 1); // "2022-06-15Z"
+  //    memcpy(warning[i].time_raised, warning_period["value"].as<const char *>(), DATESTR_LEN - 1); // "2022-06-15Z"
   //    for (JsonObject item : warning_period["Rep"].as<JsonArray>()) {
   //      warning[i].uv[j] = item["U"].as<char>();  // UV index
   //      warning[i].temp[j] = item["T"].as<char>();  // Temperature C
@@ -314,9 +317,11 @@ void demo() {
 
 void printData() {
   Serial.print("Flood Area: ");
-  Serial.println(warning.items_description);
-
+  Serial.println(warning.flood_area_id);
 
   Serial.print("Warning Level: ");
-  Serial.println(warning.items_currentWarning_severityLevel);
+  Serial.println(warning.severityLevel);
+
+  Serial.print("Time Raised: ");
+  Serial.println(warning.time_raised);
 }

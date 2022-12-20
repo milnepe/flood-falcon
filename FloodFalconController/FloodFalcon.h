@@ -22,17 +22,17 @@
 // #define FLOOD_WARNING_REMOVED 4              // T04.ogg
 // #define INIT 5                   // T05.ogg
 
-#define DATESTR_LEN 12  // "2022-06-15Z"
-#define DESCSTR_LEN 128 // Flood area description
+#define DATESTR_LEN 21  // "2022-12-19T15:20:31"
+#define FLOOD_AREA_LEN 12 // Flood area description
 
 enum flap_speeds {VFAST = 1, FAST = 2, SLOW = 4, VSLOW = 8};
 
 enum warning_levels {NONE, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER, INIT};
 
 struct floodWarning {
-    char datestr[DATESTR_LEN] = {'\0'};
-    int items_currentWarning_severityLevel = 0;
-    char items_description[DESCSTR_LEN] = {'\0'};
+    char time_raised[DATESTR_LEN] = {'\0'};
+    int severityLevel = 0;
+    char flood_area_id[FLOOD_AREA_LEN] = {'\0'};
 };
 
 class FloodFalcon {

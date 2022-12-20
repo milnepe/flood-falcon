@@ -3,7 +3,7 @@
 FloodFalcon::FloodFalcon(Adafruit_Soundboard *sfx, Adafruit_PWMServoDriver *pwm, floodWarning *warning) {
   _sfx = sfx;
   _pwm = pwm;
-  _warning = warning;
+  _warning = warning;  
 }
 
 void FloodFalcon::init(int servo, uint16_t pos) {
@@ -54,8 +54,8 @@ int FloodFalcon::doAction(boolean audio) {
 // Sets the rules for changing state
 int FloodFalcon::updateState() {
   Serial.println("Updating state...");
-  //_warning->items_currentWarning_severityLevel = 1;  // mock  
-  state = _warning->items_currentWarning_severityLevel;
+  //_warning->severityLevel = 1;  // mock  
+  state = _warning->severityLevel;
   return state;
 }
 
