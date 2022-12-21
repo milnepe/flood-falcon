@@ -23,7 +23,7 @@
 #include "FloodFalcon.h"
 #include "FloodFalconDisplay.h"
 
-const char* soft_version = "0.2.0";
+const char* soft_version = "0.2.1";
 
 #define SERVO 0        // Flapping servo
 #define SERVO_FREQ 50  // Analog servos run at ~50 Hz
