@@ -1,5 +1,4 @@
 #include "FloodFalconDisplay.h"
-#include "arduino_secrets.h"
 
 // Flood warning text
 static char w1[5][12] = { "No Flood", "Severe", "Flood", "Flood", "Warning no" };
@@ -123,7 +122,7 @@ void FloodFalconDisplay::updateDisplay() {
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, _falcon->_warning->time_raised, &Font12, COLORED);
+  _paint.DrawStringAt(0, 0, (_falcon->_warning->time_raised ? _falcon->_warning->time_raised : ""), &Font12, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
 
   // _paint.Clear(UNCOLORED);

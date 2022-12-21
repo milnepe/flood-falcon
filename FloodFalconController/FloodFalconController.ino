@@ -20,7 +20,6 @@
 #include <WiFiNINA.h>
 #include <ArduinoJson.h>
 #include <EasyButton.h>
-#include "arduino_secrets.h"
 #include "FloodFalcon.h"
 #include "FloodFalconDisplay.h"
 
@@ -251,15 +250,16 @@ void getData() {
   }
 
   // Update warning struct
-  warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
-  //warning.severityLevel = 1; // mock level
+  warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];                                               // 3
+                                                                                                                         //warning.severityLevel = 1; // mock level
+  if (warning.severityLevel) {                                                                                           // only update these items if the level is not zero
+    memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
 
-  memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
-
-  memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char*>(), DATESTR_LEN - 1);  // "2022-12-19T15:20:31"
-  for (int i = 0; i < DATESTR_LEN; i++) {
-    if (warning.time_raised[i] == 'T') {
-      warning.time_raised[i] = ' ';
+    memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char*>(), DATESTR_LEN - 1);  // "2022-12-19T15:20:31"
+    for (int i = 0; i < DATESTR_LEN; i++) {
+      if (warning.time_raised[i] == 'T') {
+        warning.time_raised[i] = ' ';
+      }
     }
   }
   // Close the connection to the server
