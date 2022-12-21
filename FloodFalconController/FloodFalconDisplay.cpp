@@ -2,9 +2,9 @@
 #include "arduino_secrets.h"
 
 // Flood warnings
-static char w1[4][12] = { "Severe", "Flood", "Flood", "Warning no" };
-static char w2[4][12] = { "Flood", "Warning", "Alert", "Longer in" };
-static char w3[4][12] = { "Warning", "", "", "Force" };
+static char w1[5][12] = { "No Flood", "Severe", "Flood", "Flood", "Warning no" };
+static char w2[5][12] = { "Warnings", "Flood", "Warning", "Alert", "Longer in" };
+static char w3[5][12] = { "", "Warning", "", "", "Force" };
 
 void FloodFalconDisplay::initDisplay(void) {
   if (_epd.Init() != 0) {
@@ -57,8 +57,7 @@ void FloodFalconDisplay::updateDisplay() {
   Serial.println("Updating display...");
   int severityLevel = _falcon->_warning->severityLevel;
   // Index warning string based on severity level
-  // When it's zero show no longer in force
-  int warning_idx = severityLevel ? severityLevel - 1 : 3;
+  int warning_idx = severityLevel ? severityLevel : 0;
   //  char single_digit[] = {'0', '\0'};
   //  char double_digit[] = {'0', '0', '\0'};
   //  char three_digit[] = {'0', '/', '0', '\0'};
