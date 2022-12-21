@@ -8,26 +8,6 @@
   Adafruit Soundboard https://github.com/adafruit/Adafruit_Soundboard_library
   Adafruit PWM Servo Driver https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library
 
-  Create a file named "arduino_secrets.h" and add the following
-  macros to store your Wifi SSID and password plus Met Office API key:
-
-  #define SECRET_SSID "YOURSSID"
-  #define SECRET_PASS "YOUR_WIFI_PASSWORD"
-
-  Set the interval between looks-ups by adjusting:
-  #define FCST_INTERVAL 60 * 60 * 1000  // 60 mins
-
-  Set the demo mode interval by adjusting:
-  #define DEMO_DELAY 10 * 1000  // 10 sec
-
-  Servo settings will need to be adjusted for your Falcon - they are
-  found in "FloodFalcon.h"
-
-  Audio clips are in ./audio - connect your sound board to your PC
-  and copy the clips to the mounted drive
-
-  Hold down demo button to enter Demo Mode during reset
-
   Author: Peter Milne
   Date: 28 Nov 2022
 
@@ -45,9 +25,6 @@
 #include "FloodFalconDisplay.h"
 
 const char* soft_version = "0.1.0";
-
-#define FCST_INTERVAL 15 * 60 * 1000  // 15 mins
-#define DEMO_DELAY 10 * 1000          // 10 sec
 
 #define SERVO 0        // Flapping servo
 #define SERVO_FREQ 50  // Analog servos run at ~50 Hz
@@ -160,7 +137,7 @@ void loop() {
       doUpdate();  // Initial update
     }
     unsigned long now = millis();
-    if ((now - lastReconnectAttempt > FCST_INTERVAL) || (updateDisplayFlag) || (playBackFlag)) {
+    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (playBackFlag)) {
       updateDisplayFlag = false;
       playBackFlag = false;
 
@@ -206,7 +183,7 @@ void doDemo() {
     default:
       break;
   }
-  delay(DEMO_DELAY);  // Delay between state change
+  delay(DEMO_INTERVAL);  // Delay between state change
 }
 
 int reconnectWiFi() {

@@ -1,4 +1,0 @@
-#define SECRET_SSID "YOURSSID"
-#define SECRET_PASS "YOURWIFI_PASSWORD"
-#define STATION_ID ""
-#define API_KEY ""

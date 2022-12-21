@@ -3,24 +3,7 @@
 
 #include <Adafruit_PWMServoDriver.h>
 #include <Adafruit_Soundboard.h>
-
-// Wing positions - adjust as required
-// If the servo is chattering at the end positions,
-// adjust the min or max value by 5ish
-#define WINGS_START 470
-#define WINGS_DOWN 460  // Max position
-#define WINGS_UP_A_BIT 420
-#define WINGS_UP_A_LOT 400
-#define PASS_OUT_POS 380
-#define DEAD_POS 350  // Min position
-
-// Audio track numbers
-// #define NONE 0                   // T00.ogg
-// #define SEVERE_FLOOD_WARNING 1   // T01.ogg
-// #define FLOOD_WARNING 2          // T02.ogg
-// #define FLOOD_ALERT 3            // T03.ogg
-// #define FLOOD_WARNING_REMOVED 4              // T04.ogg
-// #define INIT 5                   // T05.ogg
+#include "falcon_config.h"
 
 #define DATESTR_LEN 17  // "2022-12-19T15:20:31" -> "2022-12-19 15:20"
 #define FLOOD_AREA_LEN 12 // Flood area description

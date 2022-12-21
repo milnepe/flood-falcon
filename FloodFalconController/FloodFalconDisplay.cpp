@@ -1,7 +1,7 @@
 #include "FloodFalconDisplay.h"
 #include "arduino_secrets.h"
 
-// Flood warnings
+// Flood warning text
 static char w1[5][12] = { "No Flood", "Severe", "Flood", "Flood", "Warning no" };
 static char w2[5][12] = { "Warnings", "Flood", "Warning", "Alert", "Longer in" };
 static char w3[5][12] = { "", "Warning", "", "", "Force" };
@@ -57,7 +57,7 @@ void FloodFalconDisplay::updateDisplay() {
   Serial.println("Updating display...");
   int severityLevel = _falcon->_warning->severityLevel;
   // Index warning string based on severity level
-  int warning_idx = severityLevel ? severityLevel : 0;
+  //int warning_idx = severityLevel ? severityLevel : 0;
   //  char single_digit[] = {'0', '\0'};
   //  char double_digit[] = {'0', '0', '\0'};
   //  char three_digit[] = {'0', '/', '0', '\0'};
@@ -103,15 +103,15 @@ void FloodFalconDisplay::updateDisplay() {
   // _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 140, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, w1[warning_idx], &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w1[severityLevel], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 120, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, w2[warning_idx], &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w2[severityLevel], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 100, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, w3[warning_idx], &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w3[severityLevel], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 80, _paint.GetWidth(), _paint.GetHeight());
 
   // _paint.Clear(UNCOLORED);
