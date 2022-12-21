@@ -52,3 +52,15 @@ The severity level description - derived from severity
 
 The update date / time - derived from timeRaised (The date and time the warning was last reviewed. Usually (but not always) this leads to a change in the message or severity)
 
+## Configuration
+User config is in "falcon_config.h"
+
+You need to add your WiFi details and setup your server limits. Also the time interval can be adjusted.
+
+Audio clips are in ./audio - connect your sound board to your PC and copy the clips to the mounted drive.
+
+## Buttons
+RH button is dual mode - short press to replay alert - long press to toggle audio off / on
+LH button - press for demo mode - this cycles through the different states - press reset to exit demo mode
+External demo button - same as above
+Middle button - reset
