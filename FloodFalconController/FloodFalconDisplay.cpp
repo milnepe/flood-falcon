@@ -1,6 +1,11 @@
 #include "FloodFalconDisplay.h"
 #include "arduino_secrets.h"
 
+// Flood warnings
+static char w1[4][12] = { "Severe", "Flood", "Flood", "Warning no" };
+static char w2[4][12] = { "Flood", "Warning", "Alert", "Longer in" };
+static char w3[4][12] = { "Warning", "", "", "Force" };
+
 void FloodFalconDisplay::initDisplay(void) {
   if (_epd.Init() != 0) {
     return;
@@ -51,6 +56,9 @@ void FloodFalconDisplay::showGreeting(void) {
 void FloodFalconDisplay::updateDisplay() {
   Serial.println("Updating display...");
   int severityLevel = _falcon->_warning->severityLevel;
+  // Index warning string based on severity level
+  // When it's zero show no longer in force
+  int warning_idx = severityLevel ? severityLevel - 1 : 3;
   //  char single_digit[] = {'0', '\0'};
   //  char double_digit[] = {'0', '0', '\0'};
   //  char three_digit[] = {'0', '/', '0', '\0'};
@@ -96,20 +104,20 @@ void FloodFalconDisplay::updateDisplay() {
   // _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 140, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_1, &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w1[warning_idx], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 120, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_2, &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w2[warning_idx], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 100, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_3, &Font16, COLORED);
+  _paint.DrawStringAt(0, 0, w3[warning_idx], &Font16, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 80, _paint.GetWidth(), _paint.GetHeight());
 
-  _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_4, &Font16, COLORED);
-  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 60, _paint.GetWidth(), _paint.GetHeight());
+  // _paint.Clear(UNCOLORED);
+  // _paint.DrawStringAt(0, 0, LINE_4, &Font16, COLORED);
+  // _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 60, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
   _paint.DrawStringAt(0, 0, "Updated", &Font16, COLORED);
@@ -119,9 +127,9 @@ void FloodFalconDisplay::updateDisplay() {
   _paint.DrawStringAt(0, 0, _falcon->_warning->time_raised, &Font12, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
 
-  _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, LINE_7, &Font16, COLORED);
-  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 10, _paint.GetWidth(), _paint.GetHeight());
+  // _paint.Clear(UNCOLORED);
+  // _paint.DrawStringAt(0, 0, LINE_7, &Font16, COLORED);
+  // _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 10, _paint.GetWidth(), _paint.GetHeight());
 
   // Status indicators
   _paint.SetWidth(120);

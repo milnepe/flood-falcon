@@ -257,10 +257,11 @@ void getData() {
   // Stream& input;
   StaticJsonDocument<128> filter;
 
+  // Filter data objects so the response fits into memory
   JsonObject filter_items = filter.createNestedObject("items");
   filter_items["currentWarning"]["severityLevel"] = true;
   filter_items["currentWarning"]["floodAreaID"] = true;
-  filter_items["currentWarning"]["timeRaised"] = true; 
+  filter_items["currentWarning"]["timeRaised"] = true;
 
   StaticJsonDocument<1024> doc;
 
@@ -274,27 +275,19 @@ void getData() {
 
   // Update warning struct
   warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];  // 3
-  //warning.items_currentWarning_severityLevel = 1; // mock level
+  //warning.severityLevel = 1; // mock level
 
   memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
 
-  memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char *>(), DATESTR_LEN - 1); // "2022-12-19T15:20:31"
-
+  memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char*>(), DATESTR_LEN - 1);  // "2022-12-19T15:20:31"
+  for (int i = 0; i < DATESTR_LEN; i++) {
+    if (warning.time_raised[i] == 'T') {
+      warning.time_raised[i] = ' ';
+    }
+  }
   // Close the connection to the server
   client.stop();
 
-  //  JsonArray periods = doc["SiteRep"]["DV"]["Location"]["Period"];
-
-  //  for (JsonObject warning_period : periods) {
-  //    int i, j = 0;
-  //    memcpy(warning[i].time_raised, warning_period["value"].as<const char *>(), DATESTR_LEN - 1); // "2022-06-15Z"
-  //    for (JsonObject item : warning_period["Rep"].as<JsonArray>()) {
-  //      warning[i].uv[j] = item["U"].as<char>();  // UV index
-  //      warning[i].temp[j] = item["T"].as<char>();  // Temperature C
-  //      ++j;
-  //    }
-  //    ++i;
-  //  }
   Serial.println("Flood data received!");
 }
 
