@@ -54,7 +54,7 @@ void FloodMagnetDisplay::showGreeting(void) {
 
 void FloodMagnetDisplay::updateDisplay() {
   Serial.println("Updating display...");
-  int severityLevel = _falcon->_warning->severityLevel;
+  int severityLevel = _magnet->_warning->severityLevel;
   // Index warning string based on severity level
   //int warning_idx = severityLevel ? severityLevel : 0;
   //  char single_digit[] = {'0', '\0'};
@@ -122,7 +122,7 @@ void FloodMagnetDisplay::updateDisplay() {
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, (_falcon->_warning->time_raised ? _falcon->_warning->time_raised : ""), &Font12, COLORED);
+  _paint.DrawStringAt(0, 0, (_magnet->_warning->time_raised ? _magnet->_warning->time_raised : ""), &Font12, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
 
   // _paint.Clear(UNCOLORED);
@@ -137,12 +137,8 @@ void FloodMagnetDisplay::updateDisplay() {
   _paint.Clear(UNCOLORED);
   if (demoOn) {
     _paint.DrawStringAt(0, 0, "Demo Mode", &Font16, COLORED);
-  } else if (audioOn && wifiOn) {
-    _paint.DrawStringAt(0, 0, "Wifi Audio", &Font16, COLORED);
   } else if (wifiOn) {
     _paint.DrawStringAt(0, 0, "Wifi", &Font16, COLORED);
-  } else if (audioOn) {
-    _paint.DrawStringAt(0, 0, "Audio", &Font16, COLORED);
   } else {
     _paint.DrawStringAt(0, 0, "", &Font16, COLORED);
   }

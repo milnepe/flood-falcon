@@ -5,8 +5,6 @@
   Arduino WiFiNINA https://github.com/arduino-libraries/WiFiNINA
   Benoît Blanchon ArduinoJson https://arduinojson.org/
   Evert-arias EasyButton https://github.com/evert-arias/EasyButton
-  Adafruit Soundboard https://github.com/adafruit/Adafruit_Soundboard_library
-  Adafruit PWM Servo Driver https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library
 
   Author: Peter Milne
   Date: 22 March 2023
@@ -25,20 +23,12 @@
 
 const char* soft_version = "0.1.0";
 
-#define SERVO 0        // Flapping servo
-#define SERVO_FREQ 50  // Analog servos run at ~50 Hz
-
-#define SFX_RST 4  // Sound board RST pin
-
 // Flood warning data
 static floodWarning warning;
 
 WiFiClient client;
 
-// Sound board connected to Serial1 - must be set to 9600 baud
-Adafruit_Soundboard sfx = Adafruit_Soundboard(&Serial1, NULL, SFX_RST);
-
-FloodMagnet myMagnet = FloodMagnet(&sfx, &warning);
+FloodMagnet myMagnet = FloodMagnet(&warning);
 
 FloodMagnetDisplay epd = FloodMagnetDisplay(&myMagnet);
 
@@ -70,20 +60,13 @@ void setup() {
   }
   delay(2000);
 
-  // Serial 1 used for sound board at 9600 baud
-  Serial1.begin(9600);
-  while (!Serial1) {
-    ;  // wait for serial port to connect
-  }
   Serial.print("Starting client version: ");
   Serial.println(soft_version);
-
-  Serial.println("Serial1 attached");
 
   // Initialize buttons
   rightButton.begin();
   rightButton.onPressed(playback);        // Short press triggers playback
-  rightButton.onPressedFor(2000, audio);  // Long press toggles audio
+  //rightButton.onPressedFor(2000, audio);  // Long press toggles audio
   leftButton.begin();
   leftButton.onPressed(demo);  // Short press for demo
   demoButton.begin();
@@ -95,7 +78,6 @@ void setup() {
   epd.showGreeting();
 
   myMagnet.init();  // Set statrting posture
-  myMagnet.doAction(epd.audioOn);    // Trigger intro action
 
   leftButton.read();
   demoButton.read();
@@ -142,7 +124,6 @@ void loop() {
 void doUpdate() {
   getData();
   myMagnet.updateState();
-  myMagnet.doAction(epd.audioOn);
   epd.updateDisplay();
   printData();
 }
@@ -151,8 +132,6 @@ void doDemo() {
   warning.severityLevel = demo_state;
   myMagnet.updateState();
   epd.updateDisplay();
-  myMagnet.doAction(epd.audioOn);
-
 
   switch (demo_state) {
     case NONE:
@@ -263,12 +242,6 @@ void getData() {
 void playback() {
   Serial.println("Playback button pressed!");
   playBackFlag = true;
-}
-
-void audio() {
-  Serial.println("Audio button pressed!");
-  epd.audioOn = !epd.audioOn;
-  updateDisplayFlag = true;
 }
 
 void demo() {

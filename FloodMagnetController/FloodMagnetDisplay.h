@@ -22,13 +22,12 @@ class FloodMagnetDisplay {
   public:
   bool wifiOn = false;
   bool demoOn = false;
-  bool audioOn = true;
   unsigned char image[1024];
   Epd _epd; // default reset: 8, dc: 9, cs: 10, busy: 7
   Paint _paint = Paint(image, 0, 0);
-  FloodMagnet* _falcon;
+  FloodMagnet* _magnet;
 
-  FloodMagnetDisplay(FloodMagnet* falcon) : _falcon(falcon) {};
+  FloodMagnetDisplay(FloodMagnet* magnet) : _magnet(magnet) {};
   void initDisplay(void);
   void updateDisplay(void);
   void showGreeting(void);
