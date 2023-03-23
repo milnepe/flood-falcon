@@ -34,7 +34,6 @@ FloodMagnetDisplay epd = FloodMagnetDisplay(&myMagnet);
 
 int status = WL_IDLE_STATUS;
 boolean updateDisplayFlag = false;
-boolean replayFlag = false;
 unsigned long lastReconnectAttempt = 0;
 
 // Define pins
@@ -270,7 +269,7 @@ void button5_callback() {
 
 // Debug output
 void printData() {
-  Serial.print("Flood Area: ");
+  Serial.print("Flood Area: https://check-for-flooding.service.gov.uk/target-area/");
   Serial.println(warning.flood_area_id);
 
   Serial.print("Warning Level: ");
