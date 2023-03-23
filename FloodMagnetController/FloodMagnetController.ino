@@ -39,7 +39,11 @@ unsigned long lastReconnectAttempt = 0;
 
 // Define pins
 const int wifiLed = 10;  // Optional debug LED (Green - On if connected)
-enum buttons {REPLAY = 21, DEMO = 20, EXT_DEMO = 19, BUTTON4 = 18, BUTTON5 = 17};
+enum buttons { REPLAY = 21,
+               DEMO = 20,
+               EXT_DEMO = 19,
+               BUTTON4 = 18,
+               BUTTON5 = 17 };
 
 EasyButton button1(REPLAY);
 EasyButton button2(DEMO);
@@ -47,6 +51,10 @@ EasyButton button3(EXT_DEMO);
 EasyButton button4(BUTTON4);
 EasyButton button5(BUTTON5);
 
+enum mode { DEMO_MODE,
+            STD_MODE,
+            REPLAY_MODE };
+int mode = STD_MODE;  // Start in STANDARD mode
 int demo_state = NONE;
 
 void setup() {
@@ -55,9 +63,9 @@ void setup() {
 
   // Initialize Serial Port
   Serial.begin(115200);
-// while (!Serial) {
-//   ;  // wait for serial port to connect. Needed for native USB port only
-// }
+  // while (!Serial) {
+  //   ;  // wait for serial port to connect. Needed for native USB port only
+  // }
   delay(2000);
 
   Serial.print("Starting client version: ");
@@ -65,16 +73,16 @@ void setup() {
 
   // Initialize buttons
   button1.begin();
-  button1.onPressed(replay);        // Short press triggers replay
+  button1.onPressed(replay);  // Short press triggers replay
   //button1.onPressedFor(2000, audio);  // Long press toggles audio
   button2.begin();
   button2.onPressed(demo);  // Short press for demo
   button3.begin();
   button3.onPressed(demo);  // Short press external demo button / reset to exit
   button4.begin();
-  button4.onPressed(button4_callback); // Place holder
+  button4.onPressed(button4_callback);  // Place holder
   button5.begin();
-  button5.onPressed(button5_callback); // Place holder
+  button5.onPressed(button5_callback);  // Place holder
 
   // Setup display and show greeting
   epd.initDisplay();
@@ -99,9 +107,8 @@ void loop() {
   button4.read();
   button5.read();
 
-  if (!epd.demoOn) {  // Standard mode
-    if (WiFi.status() != WL_CONNECTED) {
-      // Connect wifi if it's not connected
+  if (mode == STD_MODE || mode == REPLAY_MODE) {
+    if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
       digitalWrite(wifiLed, LOW);
       epd.wifiOn = false;
       reconnectWiFi();
@@ -114,9 +121,9 @@ void loop() {
       doUpdate();  // Initial update
     }
     unsigned long now = millis();
-    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (replayFlag)) {
+    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (mode == REPLAY_MODE)) {
       updateDisplayFlag = false;
-      replayFlag = false;
+      mode = STD_MODE;  // Clear replay
 
       doUpdate();
       lastReconnectAttempt = now;
@@ -134,6 +141,7 @@ void doUpdate() {
 }
 
 void doDemo() {
+  epd.demoOn = true;
   warning.severityLevel = demo_state;
   myMagnet.updateState();
   epd.updateDisplay();
@@ -185,8 +193,7 @@ void getData() {
   }
 
   // Send HTTP request
-  client.println("GET /flood-monitoring/id/floodAreas/" AREA_CODE
-                 " HTTP/1.0");
+  client.println("GET /flood-monitoring/id/floodAreas/" AREA_CODE " HTTP/1.0");
   client.println("Host: environment.data.gov.uk");
   client.println("Connection: close");
   client.println();
@@ -226,7 +233,6 @@ void getData() {
 
   // Update warning struct
   warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];                                               // 3
-                                                                                                                         //warning.severityLevel = 1; // mock level
   if (warning.severityLevel) {                                                                                           // only update these items if the level is not zero
     memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
 
@@ -246,12 +252,12 @@ void getData() {
 // Button callbacks
 void replay() {
   Serial.println("Replay button pressed!");
-  replayFlag = true;
+  mode = REPLAY_MODE;
 }
 
 void demo() {
   Serial.println("Demo button pressed!");
-  epd.demoOn = true;
+  mode = DEMO_MODE;
 }
 
 void button4_callback() {
