@@ -34,18 +34,18 @@ FloodMagnetDisplay epd = FloodMagnetDisplay(&myMagnet);
 
 int status = WL_IDLE_STATUS;
 boolean updateDisplayFlag = false;
+boolean replayFlag = false;
 unsigned long lastReconnectAttempt = 0;
-boolean playBackFlag = false;
 
 // Define pins
 const int wifiLed = 10;  // Optional debug LED (Green - On if connected)
-const int rButton = 2;
-const int lButton = 3;
-const int dButton = 9;
+enum buttons {REPLAY = 21, DEMO = 20, EXT_DEMO = 19, BUTTON4 = 18, BUTTON5 = 17};
 
-EasyButton rightButton(rButton);  // RH button
-EasyButton leftButton(lButton);   // LH button
-EasyButton demoButton(dButton);   // External demo button
+EasyButton button1(REPLAY);
+EasyButton button2(DEMO);
+EasyButton button3(EXT_DEMO);
+EasyButton button4(BUTTON4);
+EasyButton button5(BUTTON5);
 
 int demo_state = NONE;
 
@@ -55,23 +55,26 @@ void setup() {
 
   // Initialize Serial Port
   Serial.begin(115200);
-  while (!Serial) {
-    ;  // wait for serial port to connect. Needed for native USB port only
-  }
+// while (!Serial) {
+//   ;  // wait for serial port to connect. Needed for native USB port only
+// }
   delay(2000);
 
   Serial.print("Starting client version: ");
   Serial.println(soft_version);
 
   // Initialize buttons
-  rightButton.begin();
-  rightButton.onPressed(playback);        // Short press triggers playback
-  //rightButton.onPressedFor(2000, audio);  // Long press toggles audio
-  leftButton.begin();
-  leftButton.onPressed(demo);  // Short press for demo
-  demoButton.begin();
-  demoButton.onPressed(demo);  // Short press external button for demo
-  // Press reset button (middle) to exit demo
+  button1.begin();
+  button1.onPressed(replay);        // Short press triggers replay
+  //button1.onPressedFor(2000, audio);  // Long press toggles audio
+  button2.begin();
+  button2.onPressed(demo);  // Short press for demo
+  button3.begin();
+  button3.onPressed(demo);  // Short press external demo button / reset to exit
+  button4.begin();
+  button4.onPressed(button4_callback); // Place holder
+  button5.begin();
+  button5.onPressed(button5_callback); // Place holder
 
   // Setup display and show greeting
   epd.initDisplay();
@@ -79,9 +82,9 @@ void setup() {
 
   myMagnet.init();  // Set statrting posture
 
-  leftButton.read();
-  demoButton.read();
-  if (leftButton.isPressed() || demoButton.isPressed()) {
+  button2.read();
+  button3.read();
+  if (button2.isPressed() || button3.isPressed()) {
     epd.demoOn = true;
   }
 
@@ -90,9 +93,11 @@ void setup() {
 
 void loop() {
   // Continuously update the button states
-  rightButton.read();
-  leftButton.read();
-  demoButton.read();
+  button1.read();
+  button2.read();
+  button3.read();
+  button4.read();
+  button5.read();
 
   if (!epd.demoOn) {  // Standard mode
     if (WiFi.status() != WL_CONNECTED) {
@@ -109,9 +114,9 @@ void loop() {
       doUpdate();  // Initial update
     }
     unsigned long now = millis();
-    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (playBackFlag)) {
+    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (replayFlag)) {
       updateDisplayFlag = false;
-      playBackFlag = false;
+      replayFlag = false;
 
       doUpdate();
       lastReconnectAttempt = now;
@@ -239,9 +244,9 @@ void getData() {
 }
 
 // Button callbacks
-void playback() {
-  Serial.println("Playback button pressed!");
-  playBackFlag = true;
+void replay() {
+  Serial.println("Replay button pressed!");
+  replayFlag = true;
 }
 
 void demo() {
@@ -249,6 +254,15 @@ void demo() {
   epd.demoOn = true;
 }
 
+void button4_callback() {
+  Serial.println("Button 4 pressed!");
+}
+
+void button5_callback() {
+  Serial.println("Button 5 pressed!");
+}
+
+// Debug output
 void printData() {
   Serial.print("Flood Area: ");
   Serial.println(warning.flood_area_id);
