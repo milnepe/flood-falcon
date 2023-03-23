@@ -21,6 +21,16 @@
 #include "FloodMagnet.h"
 #include "FloodMagnetDisplay.h"
 
+// Button connections
+#define BUTTON_ONE_PIN 21
+#define BUTTON_TWO_PIN 20
+#define BUTTON_THREE_PIN 19
+#define BUTTON_FOUR_PIN 18
+#define BUTTON_FIVE_PIN 17
+
+// LEDs
+#define WIFI_LED_PIN 10
+
 const char* soft_version = "0.1.0";
 
 // Flood warning data
@@ -36,19 +46,11 @@ int status = WL_IDLE_STATUS;
 boolean updateDisplayFlag = false;
 unsigned long lastReconnectAttempt = 0;
 
-// Define pins
-const int wifiLed = 10;  // Optional debug LED (Green - On if connected)
-enum buttons { REPLAY = 21,
-               DEMO = 20,
-               EXT_DEMO = 19,
-               BUTTON4 = 18,
-               BUTTON5 = 17 };
-
-EasyButton button1(REPLAY);
-EasyButton button2(DEMO);
-EasyButton button3(EXT_DEMO);
-EasyButton button4(BUTTON4);
-EasyButton button5(BUTTON5);
+EasyButton button1(BUTTON_ONE_PIN);
+EasyButton button2(BUTTON_TWO_PIN);
+EasyButton button3(BUTTON_THREE_PIN);
+EasyButton button4(BUTTON_FOUR_PIN);
+EasyButton button5(BUTTON_FIVE_PIN);
 
 enum mode { DEMO_MODE,
             STD_MODE,
@@ -57,8 +59,8 @@ int mode = STD_MODE;  // Start in STANDARD mode
 int demo_state = NONE;
 
 void setup() {
-  pinMode(wifiLed, OUTPUT);
-  digitalWrite(wifiLed, LOW);
+  pinMode(WIFI_LED_PIN, OUTPUT);
+  digitalWrite(WIFI_LED_PIN, LOW);
 
   // Initialize Serial Port
   Serial.begin(115200);
@@ -83,17 +85,19 @@ void setup() {
   button5.begin();
   button5.onPressed(button5_callback);  // Place holder
 
+  // Go straight to demo mode with no wifi
+  button2.read();
+  button3.read();
+  if (button2.isPressed() || button3.isPressed()) {
+    Serial.println("Demo is pressed");
+    mode = DEMO_MODE;
+  }
+
   // Setup display and show greeting
   epd.initDisplay();
   epd.showGreeting();
 
   myMagnet.init();  // Set statrting posture
-
-  button2.read();
-  button3.read();
-  if (button2.isPressed() || button3.isPressed()) {
-    epd.demoOn = true;
-  }
 
   delay(12000);
 }
@@ -108,12 +112,12 @@ void loop() {
 
   if (mode == STD_MODE || mode == REPLAY_MODE) {
     if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
-      digitalWrite(wifiLed, LOW);
+      digitalWrite(WIFI_LED_PIN, LOW);
       epd.wifiOn = false;
       reconnectWiFi();
       delay(2000);
       if (WiFi.status() == WL_CONNECTED) {
-        digitalWrite(wifiLed, HIGH);
+        digitalWrite(WIFI_LED_PIN, HIGH);
         epd.wifiOn = true;
         Serial.println("Wifi connected...");
       }
@@ -142,6 +146,8 @@ void doUpdate() {
 void doDemo() {
   epd.demoOn = true;
   warning.severityLevel = demo_state;
+  // Inject mock timestamp
+  memcpy(warning.time_raised, "2023-01-01 00:01:00", DATESTR_LEN - 1);
   myMagnet.updateState();
   epd.updateDisplay();
 
