@@ -22,14 +22,29 @@
 #include "FloodMagnetDisplay.h"
 
 // Button connections
-#define BUTTON_ONE_PIN 21
-#define BUTTON_TWO_PIN 20
-#define BUTTON_THREE_PIN 19
-#define BUTTON_FOUR_PIN 18
-#define BUTTON_FIVE_PIN 17
+#define B1_PIN 21
+#define B2_PIN 20
+#define B3_PIN 19
+#define B4_PIN 18
+#define B5_PIN 17
+#define B6_PIN 16
 
 // LEDs
-#define WIFI_LED_PIN 10
+#define L1_RED_PIN 15
+#define L2_AMBER_PIN 14
+#define L3_GREEN_PIN 10
+#define RGB_RED_PIN 4
+#define RGB_GREEN_PIN 3
+#define RGB_BLUE_PIN 2
+
+// Pizo buzzer
+#define BUZZER_PIN 9
+
+enum led_colours { RED,
+                  AMBER,
+                  GREEN,
+                  BLUE,
+                  WHITE };
 
 const char* soft_version = "0.1.0";
 
@@ -46,11 +61,12 @@ int status = WL_IDLE_STATUS;
 boolean updateDisplayFlag = false;
 unsigned long lastReconnectAttempt = 0;
 
-EasyButton button1(BUTTON_ONE_PIN);
-EasyButton button2(BUTTON_TWO_PIN);
-EasyButton button3(BUTTON_THREE_PIN);
-EasyButton button4(BUTTON_FOUR_PIN);
-EasyButton button5(BUTTON_FIVE_PIN);
+EasyButton button1(B1_PIN);
+EasyButton button2(B2_PIN);
+EasyButton button3(B3_PIN);
+EasyButton button4(B4_PIN);
+EasyButton button5(B5_PIN);
+EasyButton button6(B6_PIN);
 
 enum mode { DEMO_MODE,
             STD_MODE,
@@ -59,8 +75,7 @@ int mode = STD_MODE;  // Start in STANDARD mode
 int demo_state = NONE;
 
 void setup() {
-  pinMode(WIFI_LED_PIN, OUTPUT);
-  digitalWrite(WIFI_LED_PIN, LOW);
+  led_init();
 
   // Initialize Serial Port
   Serial.begin(115200);
@@ -112,12 +127,12 @@ void loop() {
 
   if (mode == STD_MODE || mode == REPLAY_MODE) {
     if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
-      digitalWrite(WIFI_LED_PIN, LOW);
+      rgb_colour(RED);
       epd.wifiOn = false;
       reconnectWiFi();
       delay(2000);
       if (WiFi.status() == WL_CONNECTED) {
-        digitalWrite(WIFI_LED_PIN, HIGH);
+        rgb_colour(GREEN);
         epd.wifiOn = true;
         Serial.println("Wifi connected...");
       }
@@ -133,6 +148,84 @@ void loop() {
     }
   } else {  // Demo mode - reset to exit so everything re-initialises
     doDemo();
+  }
+}
+
+void led_init() {
+  pinMode(L1_RED_PIN, OUTPUT);
+  pinMode(L2_AMBER_PIN, OUTPUT);
+  pinMode(L3_GREEN_PIN, OUTPUT);
+  pinMode(RGB_RED_PIN, OUTPUT);
+  digitalWrite(RGB_RED_PIN, HIGH);
+  pinMode(RGB_GREEN_PIN, OUTPUT);
+  digitalWrite(RGB_GREEN_PIN, HIGH);
+  pinMode(RGB_BLUE_PIN, OUTPUT);
+  digitalWrite(RGB_BLUE_PIN, HIGH);
+
+  led_colour(RED);
+  delay(500);
+  led_colour(AMBER);
+  delay(500);
+  led_colour(GREEN);
+  delay(500);
+
+  rgb_colour(RED);
+  delay(500);
+  rgb_colour(GREEN);
+  delay(500);
+  rgb_colour(BLUE);
+  delay(500);
+  rgb_colour(WHITE);
+  delay(500);
+}
+
+void led_colour(led_colours colour) {
+  switch (colour) {
+    case RED:
+      digitalWrite(L1_RED_PIN, HIGH);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, LOW);
+      break;
+    case AMBER:
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, HIGH);
+      digitalWrite(L3_GREEN_PIN, LOW);
+      break;
+    case GREEN:
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, HIGH);
+      break;
+    default:  // All off
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, LOW);
+      break;
+  }
+}
+
+void rgb_colour(led_colours colour) {
+  switch (colour) {
+    case RED:
+      digitalWrite(RGB_RED_PIN, LOW);
+      digitalWrite(RGB_GREEN_PIN, HIGH);
+      digitalWrite(RGB_BLUE_PIN, HIGH);
+      break;
+    case GREEN:
+      digitalWrite(RGB_RED_PIN, HIGH);
+      digitalWrite(RGB_GREEN_PIN, LOW);
+      digitalWrite(RGB_BLUE_PIN, HIGH);
+      break;
+    case BLUE:
+      digitalWrite(RGB_RED_PIN, HIGH);
+      digitalWrite(RGB_GREEN_PIN, HIGH);
+      digitalWrite(RGB_BLUE_PIN, LOW);
+      break;
+    default:  // White
+      digitalWrite(RGB_RED_PIN, LOW);
+      digitalWrite(RGB_GREEN_PIN, LOW);
+      digitalWrite(RGB_BLUE_PIN, LOW);
+      break;
   }
 }
 
@@ -154,17 +247,22 @@ void doDemo() {
   switch (demo_state) {
     case NONE:
       demo_state = FLOOD_ALERT;
+      led_colour(GREEN);
       break;
     case SEVERE_FLOOD_WARNING:
+      led_colour(RED);
       demo_state = NO_LONGER;
       break;
     case FLOOD_WARNING:
+      led_colour(RED);
       demo_state = SEVERE_FLOOD_WARNING;
       break;
     case FLOOD_ALERT:
+      led_colour(AMBER);
       demo_state = FLOOD_WARNING;
       break;
     case NO_LONGER:
+      led_colour(GREEN);
       demo_state = NONE;
       break;
     default:
