@@ -54,7 +54,7 @@ void FloodMagnetDisplay::showGreeting(void) {
 
 void FloodMagnetDisplay::updateDisplay() {
   Serial.println("Updating display...");
-  int severityLevel = _magnet->_warning->severityLevel;
+  int severityLevel = _magnet->warning.severityLevel;
   // Index warning string based on severity level
   //int warning_idx = severityLevel ? severityLevel : 0;
   //  char single_digit[] = {'0', '\0'};
@@ -122,7 +122,7 @@ void FloodMagnetDisplay::updateDisplay() {
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 40, _paint.GetWidth(), _paint.GetHeight());
 
   _paint.Clear(UNCOLORED);
-  _paint.DrawStringAt(0, 0, (_magnet->_warning->time_raised ? _magnet->_warning->time_raised : ""), &Font12, COLORED);
+  _paint.DrawStringAt(0, 0, (_magnet->warning.time_raised ? _magnet->warning.time_raised : ""), &Font12, COLORED);
   _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 20, _paint.GetWidth(), _paint.GetHeight());
 
   // _paint.Clear(UNCOLORED);

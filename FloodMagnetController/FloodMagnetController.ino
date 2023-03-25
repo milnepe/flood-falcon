@@ -18,8 +18,9 @@
 #include <WiFiNINA.h>
 #include <ArduinoJson.h>
 #include <EasyButton.h>
-#include "FloodMagnet.h"
+#include "FloodAPI.h"
 #include "FloodMagnetDisplay.h"
+#include "led.h"
 
 // Button connections
 #define B1_PIN 21
@@ -29,33 +30,14 @@
 #define B5_PIN 17
 #define B6_PIN 16
 
-// LEDs
-#define L1_RED_PIN 15
-#define L2_AMBER_PIN 14
-#define L3_GREEN_PIN 10
-#define RGB_RED_PIN 4
-#define RGB_GREEN_PIN 3
-#define RGB_BLUE_PIN 2
-
 // Pizo buzzer
 #define BUZZER_PIN 9
 
-enum led_colours { RED,
-                  AMBER,
-                  GREEN,
-                  BLUE,
-                  WHITE };
-
 const char* soft_version = "0.1.0";
 
-// Flood warning data
-static floodWarning warning;
+FloodAPI myFloodAPI = FloodAPI();
 
-WiFiClient client;
-
-FloodMagnet myMagnet = FloodMagnet(&warning);
-
-FloodMagnetDisplay epd = FloodMagnetDisplay(&myMagnet);
+FloodMagnetDisplay epd = FloodMagnetDisplay(&myFloodAPI);
 
 int status = WL_IDLE_STATUS;
 boolean updateDisplayFlag = false;
@@ -72,7 +54,6 @@ enum mode { DEMO_MODE,
             STD_MODE,
             REPLAY_MODE };
 int mode = STD_MODE;  // Start in STANDARD mode
-int demo_state = NONE;
 
 void setup() {
   led_init();
@@ -112,9 +93,9 @@ void setup() {
   epd.initDisplay();
   epd.showGreeting();
 
-  myMagnet.init();  // Set statrting posture
+  myFloodAPI.init();  // Set statrting posture
 
-  delay(12000);
+  delay(5000);
 }
 
 void loop() {
@@ -151,124 +132,20 @@ void loop() {
   }
 }
 
-void led_init() {
-  pinMode(L1_RED_PIN, OUTPUT);
-  pinMode(L2_AMBER_PIN, OUTPUT);
-  pinMode(L3_GREEN_PIN, OUTPUT);
-  pinMode(RGB_RED_PIN, OUTPUT);
-  digitalWrite(RGB_RED_PIN, HIGH);
-  pinMode(RGB_GREEN_PIN, OUTPUT);
-  digitalWrite(RGB_GREEN_PIN, HIGH);
-  pinMode(RGB_BLUE_PIN, OUTPUT);
-  digitalWrite(RGB_BLUE_PIN, HIGH);
-
-  led_colour(RED);
-  delay(500);
-  led_colour(AMBER);
-  delay(500);
-  led_colour(GREEN);
-  delay(500);
-
-  rgb_colour(RED);
-  delay(500);
-  rgb_colour(GREEN);
-  delay(500);
-  rgb_colour(BLUE);
-  delay(500);
-  rgb_colour(WHITE);
-  delay(500);
-}
-
-void led_colour(led_colours colour) {
-  switch (colour) {
-    case RED:
-      digitalWrite(L1_RED_PIN, HIGH);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, LOW);
-      break;
-    case AMBER:
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, HIGH);
-      digitalWrite(L3_GREEN_PIN, LOW);
-      break;
-    case GREEN:
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, HIGH);
-      break;
-    default:  // All off
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, LOW);
-      break;
-  }
-}
-
-void rgb_colour(led_colours colour) {
-  switch (colour) {
-    case RED:
-      digitalWrite(RGB_RED_PIN, LOW);
-      digitalWrite(RGB_GREEN_PIN, HIGH);
-      digitalWrite(RGB_BLUE_PIN, HIGH);
-      break;
-    case GREEN:
-      digitalWrite(RGB_RED_PIN, HIGH);
-      digitalWrite(RGB_GREEN_PIN, LOW);
-      digitalWrite(RGB_BLUE_PIN, HIGH);
-      break;
-    case BLUE:
-      digitalWrite(RGB_RED_PIN, HIGH);
-      digitalWrite(RGB_GREEN_PIN, HIGH);
-      digitalWrite(RGB_BLUE_PIN, LOW);
-      break;
-    default:  // White
-      digitalWrite(RGB_RED_PIN, LOW);
-      digitalWrite(RGB_GREEN_PIN, LOW);
-      digitalWrite(RGB_BLUE_PIN, LOW);
-      break;
-  }
-}
-
 void doUpdate() {
-  getData();
-  myMagnet.updateState();
+  myFloodAPI.getData();
+  myFloodAPI.updateState(myFloodAPI.warning.severityLevel);
   epd.updateDisplay();
   printData();
 }
 
 void doDemo() {
   epd.demoOn = true;
-  warning.severityLevel = demo_state;
-  // Inject mock timestamp
-  memcpy(warning.time_raised, "2023-01-01 00:01:00", DATESTR_LEN - 1);
-  myMagnet.updateState();
-  epd.updateDisplay();
-
-  switch (demo_state) {
-    case NONE:
-      demo_state = FLOOD_ALERT;
-      led_colour(GREEN);
-      break;
-    case SEVERE_FLOOD_WARNING:
-      led_colour(RED);
-      demo_state = NO_LONGER;
-      break;
-    case FLOOD_WARNING:
-      led_colour(RED);
-      demo_state = SEVERE_FLOOD_WARNING;
-      break;
-    case FLOOD_ALERT:
-      led_colour(AMBER);
-      demo_state = FLOOD_WARNING;
-      break;
-    case NO_LONGER:
-      led_colour(GREEN);
-      demo_state = NONE;
-      break;
-    default:
-      break;
+  while (1) {
+    myFloodAPI.demo();
+    epd.updateDisplay();
+    delay(DEMO_INTERVAL);  // Delay between state change
   }
-  delay(DEMO_INTERVAL);  // Delay between state change
 }
 
 int reconnectWiFi() {
@@ -282,74 +159,8 @@ int reconnectWiFi() {
 
   WiFi.disconnect();  // Force a disconnect
   delay(1000);
-  // Creds from arduino_secrets.h
   WiFi.begin(SECRET_SSID, SECRET_PASS);
   return WiFi.status();
-}
-
-void getData() {
-  // Connect to host
-  Serial.println("Connecting to environment.data.gov.uk");
-  if (!client.connect("environment.data.gov.uk", 80)) {
-    Serial.println("Failed to connect to server");
-    return;
-  }
-
-  // Send HTTP request
-  client.println("GET /flood-monitoring/id/floodAreas/" AREA_CODE " HTTP/1.0");
-  client.println("Host: environment.data.gov.uk");
-  client.println("Connection: close");
-  client.println();
-
-  // Check status code
-  char status[32] = { 0 };
-  client.readBytesUntil('\r', status, sizeof(status));
-  // should be "HTTP/1.0 200 OK"
-  if (memcmp(status + 9, "200 OK", 6) != 0) {
-    Serial.print("Unexpected HTTP status");
-    Serial.println(status);
-    client.stop();
-    return;
-  }
-
-  // Skip response headers
-  client.find("\r\n\r\n");
-
-  // Stream& input;
-  StaticJsonDocument<128> filter;
-
-  // Filter data objects so the response fits into memory
-  JsonObject filter_items = filter.createNestedObject("items");
-  filter_items["currentWarning"]["severityLevel"] = true;
-  filter_items["currentWarning"]["floodAreaID"] = true;
-  filter_items["currentWarning"]["timeRaised"] = true;
-
-  StaticJsonDocument<1024> doc;
-
-  DeserializationError error = deserializeJson(doc, client, DeserializationOption::Filter(filter));
-
-  if (error) {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.c_str());
-    return;
-  }
-
-  // Update warning struct
-  warning.severityLevel = doc["items"]["currentWarning"]["severityLevel"];                                               // 3
-  if (warning.severityLevel) {                                                                                           // only update these items if the level is not zero
-    memcpy(warning.flood_area_id, doc["items"]["currentWarning"]["floodAreaID"].as<const char*>(), FLOOD_AREA_LEN - 1);  // "Tributaries between Dorchester and ...
-
-    memcpy(warning.time_raised, doc["items"]["currentWarning"]["timeRaised"].as<const char*>(), DATESTR_LEN - 1);  // "2022-12-19T15:20:31"
-    for (int i = 0; i < DATESTR_LEN; i++) {
-      if (warning.time_raised[i] == 'T') {
-        warning.time_raised[i] = ' ';
-      }
-    }
-  }
-  // Close the connection to the server
-  client.stop();
-
-  Serial.println("Flood data received!");
 }
 
 // Button callbacks
@@ -374,11 +185,11 @@ void button5_callback() {
 // Debug output
 void printData() {
   Serial.print("Flood Area: https://check-for-flooding.service.gov.uk/target-area/");
-  Serial.println(warning.flood_area_id);
+  Serial.println(myFloodAPI.warning.flood_area_id);
 
   Serial.print("Warning Level: ");
-  Serial.println(warning.severityLevel);
+  Serial.println(myFloodAPI.warning.severityLevel);
 
   Serial.print("Time Raised: ");
-  Serial.println(warning.time_raised);
+  Serial.println(myFloodAPI.warning.time_raised);
 }

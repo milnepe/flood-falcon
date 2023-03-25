@@ -1,6 +1,8 @@
-#ifndef _FLOOD_MAGNET_H_
-#define _FLOOD_MAGNET_H_
+#ifndef _FLOOD_API_H_
+#define _FLOOD_API_H_
 
+#include <WiFiNINA.h>
+#include <ArduinoJson.h>
 #include "magnet_config.h"
 
 #define DATESTR_LEN 17  // "2022-12-19T15:20:31" -> "2022-12-19 15:20"
@@ -14,14 +16,16 @@ struct floodWarning {
     char flood_area_id[FLOOD_AREA_LEN] = {'\0'};
 };
 
-class FloodMagnet {
+class FloodAPI {
   public:
-    floodWarning * _warning; // Flood warning data
+    floodWarning warning; // Flood warning data
     int state;
-    FloodMagnet(floodWarning *warning);
+    FloodAPI();
  public:
     void init();
-    int updateState();
+    int updateState(int state);
+    void getData();
+    void demo();
 };
 
 #endif

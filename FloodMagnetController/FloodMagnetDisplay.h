@@ -1,7 +1,7 @@
-#ifndef _FLOOD_MAGNET_DISPLAY_H_
-#define _FLOOD_MAGNET_DISPLAY_H_
+#ifndef _FLOOD_API_DISPLAY_H_
+#define _FLOOD_API_DISPLAY_H_
 
-#include "FloodMagnet.h"
+#include "FloodAPI.h"
 #include "epd2in9_V2.h"
 #include "epdpaint.h"
 #include "img/rslogo.h"
@@ -25,9 +25,9 @@ class FloodMagnetDisplay {
   unsigned char image[1024];
   Epd _epd; // default reset: 8, dc: 9, cs: 10, busy: 7
   Paint _paint = Paint(image, 0, 0);
-  FloodMagnet* _magnet;
+  FloodAPI* _magnet;
 
-  FloodMagnetDisplay(FloodMagnet* magnet) : _magnet(magnet) {};
+  FloodMagnetDisplay(FloodAPI* magnet) : _magnet(magnet) {};
   void initDisplay(void);
   void updateDisplay(void);
   void showGreeting(void);
