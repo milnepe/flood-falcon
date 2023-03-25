@@ -36,15 +36,29 @@ int FloodAPI::updateState(int state) {
 
 // Advance through states and wrap around
 void FloodAPI::demo() {
-  static int state = NONE;
   // Inject mock timestamp
   memcpy(warning.time_raised, "2023-01-01 00:01:00", DATESTR_LEN - 1);
-  if (state == NONE) {
-    state = NO_LONGER;
-  }
-  warning.severityLevel = state--;
+  static int state = NONE;
+  warning.severityLevel = state;  
   Serial.println(warning.severityLevel);
   updateState(warning.severityLevel);
+  switch (state) {
+    case NONE:
+      state = FLOOD_ALERT;
+      break;
+    case SEVERE_FLOOD_WARNING:
+      state = NO_LONGER;
+      break;
+    case FLOOD_WARNING:
+      state = SEVERE_FLOOD_WARNING;
+      break;
+    case FLOOD_ALERT:
+      state = FLOOD_WARNING;
+      break;
+    case NO_LONGER:
+      state = NONE;
+      break;
+  }
 }
 
 void FloodAPI::getData() {

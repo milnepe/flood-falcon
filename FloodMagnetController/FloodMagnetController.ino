@@ -95,7 +95,7 @@ void setup() {
 
   myFloodAPI.init();  // Set statrting posture
 
-  delay(5000);
+  delay(3000);
 }
 
 void loop() {

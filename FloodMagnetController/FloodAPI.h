@@ -8,7 +8,7 @@
 #define DATESTR_LEN 17  // "2022-12-19T15:20:31" -> "2022-12-19 15:20"
 #define FLOOD_AREA_LEN 12 // Flood area description
 
-enum warning_levels {NONE, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER, INIT};
+enum warning_levels {INIT = -1, NONE, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER};
 
 struct floodWarning {
     char time_raised[DATESTR_LEN] = {'\0'};
