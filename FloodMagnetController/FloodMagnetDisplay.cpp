@@ -1,9 +1,9 @@
 #include "FloodMagnetDisplay.h"
 
 // Flood warning text
-static char w1[5][12] = { "No Flood", "Severe", "Flood", "Flood", "Warning no" };
-static char w2[5][12] = { "Warnings", "Flood", "Warning", "Alert", "Longer in" };
-static char w3[5][12] = { "", "Warning", "", "", "Force" };
+static char w1[5][12] = { "No Flood", "DANGER TO", "Flooding is", "Flooding is", "Warning no" };
+static char w2[5][12] = { "Warnings", "LIFE", "Expected", "Possible", "Longer in" };
+static char w3[5][12] = { "", "", "", "", "Force" };
 
 void FloodMagnetDisplay::initDisplay(void) {
   if (_epd.Init() != 0) {

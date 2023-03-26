@@ -85,7 +85,7 @@ void setup() {
   // Go straight to demo mode with no wifi
   button2.read();
   button3.read();
-  if (button2.isPressed() || button3.isPressed()) {
+  if (button5.isPressed()) {
     Serial.println("Starting demo mode...");
     mode = DEMO_MODE;
   }
