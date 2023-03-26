@@ -14,9 +14,6 @@
   Version 3, 29 June 2007
 */
 
-#include <SPI.h>
-#include <WiFiNINA.h>
-#include <ArduinoJson.h>
 #include <EasyButton.h>
 #include "FloodAPI.h"
 #include "FloodMagnetDisplay.h"
@@ -70,22 +67,26 @@ void setup() {
 
   // Initialize buttons
   button1.begin();
-  button1.onPressed(replay);  // Short press triggers replay
+  button1.onPressed(dry);
   //button1.onPressedFor(2000, audio);  // Long press toggles audio
   button2.begin();
-  button2.onPressed(demo);  // Short press for demo
+  button2.onPressed(rain);  // Place holder
   button3.begin();
-  button3.onPressed(demo);  // Short press external demo button / reset to exit
+  button3.onPressed(flood);  // Place holder
   button4.begin();
-  button4.onPressed(button4_callback);  // Place holder
+  button4.onPressed(replay);
   button5.begin();
-  button5.onPressed(button5_callback);  // Place holder
+  // Hold down B5 while pressing reset to enter demo mode
+  // Press reset to exit back to stdard mode
+  button5.onPressed(demo);
+  button6.begin();
+  button6.onPressed(clock_sync_ap_mode);  // Place holder
 
   // Go straight to demo mode with no wifi
   button2.read();
   button3.read();
   if (button2.isPressed() || button3.isPressed()) {
-    Serial.println("Demo is pressed");
+    Serial.println("Starting demo mode...");
     mode = DEMO_MODE;
   }
 
@@ -93,7 +94,7 @@ void setup() {
   epd.initDisplay();
   epd.showGreeting();
 
-  myFloodAPI.init();  // Set statrting posture
+  myFloodAPI.init();
 
   delay(3000);
 }
@@ -104,7 +105,8 @@ void loop() {
   button2.read();
   button3.read();
   button4.read();
-  button5.read();
+  // button5.read(); Read only in setup
+  button6.read();
 
   if (mode == STD_MODE || mode == REPLAY_MODE) {
     if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
@@ -164,22 +166,30 @@ int reconnectWiFi() {
 }
 
 // Button callbacks
+void dry() {
+  Serial.println("B1 button pressed...");
+}
+
+void rain() {
+  Serial.println("B2 button pressed...");
+}
+
+void flood() {
+  Serial.println("B3 button pressed...");
+}
+
 void replay() {
-  Serial.println("Replay button pressed!");
+  Serial.println("B4 button pressed...");
   mode = REPLAY_MODE;
 }
 
 void demo() {
-  Serial.println("Demo button pressed!");
+  Serial.println("B5 button pressed...");
   mode = DEMO_MODE;
 }
 
-void button4_callback() {
-  Serial.println("Button 4 pressed!");
-}
-
-void button5_callback() {
-  Serial.println("Button 5 pressed!");
+void clock_sync_ap_mode() {
+  Serial.println("B6 button pressed...");
 }
 
 // Debug output

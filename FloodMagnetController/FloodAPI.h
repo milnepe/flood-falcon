@@ -4,6 +4,7 @@
 #include <WiFiNINA.h>
 #include <ArduinoJson.h>
 #include "magnet_config.h"
+#include "led.h"
 
 #define DATESTR_LEN 17  // "2022-12-19T15:20:31" -> "2022-12-19 15:20"
 #define FLOOD_AREA_LEN 12 // Flood area description
