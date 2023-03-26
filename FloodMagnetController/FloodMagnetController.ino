@@ -30,7 +30,7 @@
 // Pizo buzzer
 #define BUZZER_PIN 9
 
-const char* soft_version = "0.1.0";
+const char* soft_version = "0.2.0";
 
 FloodAPI myFloodAPI = FloodAPI();
 
