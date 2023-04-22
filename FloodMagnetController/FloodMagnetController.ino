@@ -80,25 +80,23 @@ void setup() {
   button4.begin();
   button4.onPressed(replay);
   button5.begin();
-  // Hold down B5 while pressing reset to enter demo mode
-  // Press reset to exit back to stdard mode
-  button5.onPressed(demo);
   button6.begin();
   button6.onPressed(clock_sync_ap_mode);  // Place holder
-
-  // Go straight to demo mode with no wifi
-  button2.read();
-  button3.read();
-  if (button5.isPressed()) {
-    Serial.println("Starting demo mode...");
-    mode = DEMO_MODE;
-  }
 
   // Setup display and show greeting
   epd.initDisplay();
   epd.showGreeting();
 
   myFloodAPI.init();
+
+  // Hold down B5 while pressing reset to enter demo mode
+  // Press reset to exit back to standard mode
+  if (button5.isPressed()) {
+    mode = DEMO_MODE;
+    rgb_colour(RED);
+    Serial.println("Starting demo mode...");
+    doDemo();
+  }
 
   delay(3000);
 }
@@ -112,28 +110,24 @@ void loop() {
   // button5.read(); Read only in setup
   button6.read();
 
-  if (mode == STD_MODE || mode == REPLAY_MODE) {
-    if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
-      rgb_colour(RED);
-      epd.wifiOn = false;
-      reconnectWiFi();
-      delay(2000);
-      if (WiFi.status() == WL_CONNECTED) {
-        rgb_colour(GREEN);
-        epd.wifiOn = true;
-        Serial.println("Wifi connected...");
-      }
-      doUpdate();  // Initial update
+  if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
+    rgb_colour(RED);
+    epd.wifiOn = false;
+    reconnectWiFi();
+    delay(2000);
+    if (WiFi.status() == WL_CONNECTED) {
+      rgb_colour(GREEN);
+      epd.wifiOn = true;
+      Serial.println("Wifi connected...");
     }
-    unsigned long now = millis();
-    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
-      mode = STD_MODE;  // Clear replay
+    doUpdate();  // Initial update
+  }
+  unsigned long now = millis();
+  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
+    mode = STD_MODE;  // Clear replay
 
-      doUpdate();
-      lastReconnectAttempt = now;
-    }
-  } else {  // Demo mode - reset to exit so everything re-initialises
-    doDemo();
+    doUpdate();
+    lastReconnectAttempt = now;
   }
 }
 
@@ -184,11 +178,6 @@ void flood() {
 void replay() {
   Serial.println("B4 button pressed...");
   mode = REPLAY_MODE;
-}
-
-void demo() {
-  Serial.println("B5 button pressed...");
-  mode = DEMO_MODE;
 }
 
 void clock_sync_ap_mode() {
