@@ -42,7 +42,6 @@ FloodAPI myFloodAPI = FloodAPI();
 FloodMagnetDisplay epd = FloodMagnetDisplay(&myFloodAPI);
 
 int status = WL_IDLE_STATUS;
-boolean updateDisplayFlag = false;
 unsigned long lastReconnectAttempt = 0;
 
 EasyButton button1(B1_PIN);
@@ -127,8 +126,7 @@ void loop() {
       doUpdate();  // Initial update
     }
     unsigned long now = millis();
-    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (updateDisplayFlag) || (mode == REPLAY_MODE)) {
-      updateDisplayFlag = false;
+    if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
       mode = STD_MODE;  // Clear replay
 
       doUpdate();
