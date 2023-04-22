@@ -2,7 +2,6 @@
 
 // Flood warning data
 //static floodWarning warning;
-
 FloodAPI::FloodAPI() {
 }
 
@@ -10,7 +9,7 @@ void FloodAPI::init() {
   state = INIT;
 }
 
-int FloodAPI::updateState(int state) {
+int FloodAPI::updateState(int state, int mymode) {
   switch (state) {
     case NONE:
       led_colour(GREEN);
@@ -18,14 +17,26 @@ int FloodAPI::updateState(int state) {
     case SEVERE_FLOOD_WARNING:
       led_colour(RED);
       buzzer_on();
+      if (mymode == DEMO_MODE) {
+        delay(2000);
+        buzzer_off();
+      }
       break;
     case FLOOD_WARNING:
       led_colour(RED);
       buzzer_on();
+      if (mymode == DEMO_MODE) {
+        delay(2000);
+        buzzer_off();
+      }      
       break;
     case FLOOD_ALERT:
       led_colour(AMBER);
       buzzer_on();
+      if (mymode == DEMO_MODE) {
+        delay(2000);
+        buzzer_off();
+      }      
       break;
     case NO_LONGER:
       led_colour(GREEN);
@@ -43,7 +54,7 @@ void FloodAPI::demo() {
   static int state = NONE;
   warning.severityLevel = state;
   Serial.println(warning.severityLevel);
-  updateState(warning.severityLevel);
+  updateState(warning.severityLevel, DEMO_MODE);
   switch (state) {
     case NONE:
       state = FLOOD_ALERT;

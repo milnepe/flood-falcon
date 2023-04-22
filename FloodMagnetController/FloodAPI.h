@@ -11,6 +11,7 @@
 #define FLOOD_AREA_LEN 12 // Flood area description
 
 enum warning_levels {INIT = -1, NONE, SEVERE_FLOOD_WARNING, FLOOD_WARNING, FLOOD_ALERT, NO_LONGER};
+enum mode { DEMO_MODE, STD_MODE, REPLAY_MODE };
 
 struct floodWarning {
     char time_raised[DATESTR_LEN] = {'\0'};
@@ -25,7 +26,7 @@ class FloodAPI {
     FloodAPI();
  public:
     void init();
-    int updateState(int state);
+    int updateState(int state, int mymode);
     void getData();
     void demo();
 };

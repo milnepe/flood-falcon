@@ -23,6 +23,7 @@ If you make use of this data please acknowledge this with the following attribut
 #include "FloodAPI.h"
 #include "FloodMagnetDisplay.h"
 #include "led.h"
+#include "buzzer.h"
 
 // Button connections
 #define B1_PIN 21
@@ -32,8 +33,7 @@ If you make use of this data please acknowledge this with the following attribut
 #define B5_PIN 17
 #define B6_PIN 16
 
-// Pizo buzzer
-#define BUZZER_PIN 15
+enum mode mymode = STD_MODE;
 
 const char* soft_version = "0.2.1";
 
@@ -51,13 +51,9 @@ EasyButton button4(B4_PIN);
 EasyButton button5(B5_PIN);
 EasyButton button6(B6_PIN);
 
-enum mode { DEMO_MODE,
-            STD_MODE,
-            REPLAY_MODE };
-int mode = STD_MODE;  // Start in STANDARD mode
-
 void setup() {
   led_init();
+  buzzer_init();
 
   // Initialize Serial Port
   Serial.begin(115200);
@@ -72,13 +68,13 @@ void setup() {
   // Initialize buttons
   button1.begin();
   button1.onPressed(dry);
-  //button1.onPressedFor(2000, audio);  // Long press toggles audio
   button2.begin();
   button2.onPressed(rain);  // Place holder
   button3.begin();
   button3.onPressed(flood);  // Place holder
   button4.begin();
   button4.onPressed(replay);
+  button4.onPressedFor(2000, buzzer_off);  // Cancel buzzer
   button5.begin();
   button6.begin();
   button6.onPressed(clock_sync_ap_mode);  // Place holder
@@ -92,12 +88,11 @@ void setup() {
   // Hold down B5 while pressing reset to enter demo mode
   // Press reset to exit back to standard mode
   if (button5.isPressed()) {
-    mode = DEMO_MODE;
+    mymode = DEMO_MODE;
     rgb_colour(RED);
     Serial.println("Starting demo mode...");
     doDemo();
   }
-
   delay(3000);
 }
 
@@ -123,8 +118,8 @@ void loop() {
     }
   }
   unsigned long now = millis();
-  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
-    mode = STD_MODE;  // Clear replay
+  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mymode == REPLAY_MODE)) {
+    mymode = STD_MODE;  // Clear replay
     doUpdate();
     lastReconnectAttempt = now;
   }
@@ -132,7 +127,7 @@ void loop() {
 
 void doUpdate() {
   myFloodAPI.getData();
-  myFloodAPI.updateState(myFloodAPI.warning.severityLevel);
+  myFloodAPI.updateState(myFloodAPI.warning.severityLevel, mymode);
   epd.updateDisplay();
   printData();
 }
@@ -164,23 +159,28 @@ int reconnectWiFi() {
 // Button callbacks
 void dry() {
   Serial.println("B1 button pressed...");
+  bip();
 }
 
 void rain() {
   Serial.println("B2 button pressed...");
+  bip();
 }
 
 void flood() {
   Serial.println("B3 button pressed...");
+  bip();
 }
 
 void replay() {
   Serial.println("B4 button pressed...");
-  mode = REPLAY_MODE;
+  mymode = REPLAY_MODE;
+  bip();
 }
 
 void clock_sync_ap_mode() {
   Serial.println("B6 button pressed...");
+  bip();
 }
 
 // Debug output
