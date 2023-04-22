@@ -119,13 +119,12 @@ void loop() {
       rgb_colour(GREEN);
       epd.wifiOn = true;
       Serial.println("Wifi connected...");
+      doUpdate();  // Initial update
     }
-    doUpdate();  // Initial update
   }
   unsigned long now = millis();
   if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
     mode = STD_MODE;  // Clear replay
-
     doUpdate();
     lastReconnectAttempt = now;
   }
