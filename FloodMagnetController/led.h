@@ -2,10 +2,10 @@
 #define _FLOOD_LED_H_
 
 // LEDs
-#define L1_RED_PIN 15
-#define L2_AMBER_PIN 14
+#define L1_RED_PIN 6
+#define L2_AMBER_PIN 9
 #define L3_GREEN_PIN 10
-#define RGB_RED_PIN 4
+#define RGB_RED_PIN 5
 #define RGB_GREEN_PIN 3
 #define RGB_BLUE_PIN 2
 
@@ -15,26 +15,32 @@
 #define BLUE 4
 #define WHITE 5
 
+// Common anode - 0 is on 255 is off
 static void rgb_colour(int colour) {
   switch (colour) {
     case RED:
-      digitalWrite(RGB_RED_PIN, LOW);
-      digitalWrite(RGB_GREEN_PIN, HIGH);
+      analogWrite(RGB_GREEN_PIN, 127);  // Half brightness
+      analogWrite(RGB_GREEN_PIN, 255);
       digitalWrite(RGB_BLUE_PIN, HIGH);
       break;
     case GREEN:
-      digitalWrite(RGB_RED_PIN, HIGH);
-      digitalWrite(RGB_GREEN_PIN, LOW);
+      analogWrite(RGB_RED_PIN, 255);
+      analogWrite(RGB_GREEN_PIN, 127);  // Half brightness
       digitalWrite(RGB_BLUE_PIN, HIGH);
       break;
     case BLUE:
-      digitalWrite(RGB_RED_PIN, HIGH);
-      digitalWrite(RGB_GREEN_PIN, HIGH);
+      analogWrite(RGB_RED_PIN, 255);
+      analogWrite(RGB_GREEN_PIN, 255);
+      digitalWrite(RGB_BLUE_PIN, LOW); // Full brightness
+      break;
+    case WHITE:
+      analogWrite(RGB_RED_PIN, 0);
+      analogWrite(RGB_GREEN_PIN, 0);
       digitalWrite(RGB_BLUE_PIN, LOW);
       break;
     default:  // White
-      digitalWrite(RGB_RED_PIN, LOW);
-      digitalWrite(RGB_GREEN_PIN, LOW);
+      analogWrite(RGB_GREEN_PIN, 0);
+      analogWrite(RGB_GREEN_PIN, 0);
       digitalWrite(RGB_BLUE_PIN, LOW);
       break;
   }
@@ -43,24 +49,24 @@ static void rgb_colour(int colour) {
 static void led_colour(int colour) {
   switch (colour) {
     case RED:
-      digitalWrite(L1_RED_PIN, HIGH);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, LOW);
+      analogWrite(L1_RED_PIN, 255);
+      analogWrite(L2_AMBER_PIN, 0);
+      analogWrite(L3_GREEN_PIN, 0);
       break;
     case AMBER:
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, HIGH);
-      digitalWrite(L3_GREEN_PIN, LOW);
+      analogWrite(L1_RED_PIN, 0);
+      analogWrite(L2_AMBER_PIN, 255);
+      analogWrite(L3_GREEN_PIN, 0);
       break;
     case GREEN:
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, HIGH);
+      analogWrite(L1_RED_PIN, 0);
+      analogWrite(L2_AMBER_PIN, 0);
+      analogWrite(L3_GREEN_PIN, 255);
       break;
     default:  // All off
-      digitalWrite(L1_RED_PIN, LOW);
-      digitalWrite(L2_AMBER_PIN, LOW);
-      digitalWrite(L3_GREEN_PIN, LOW);
+      analogWrite(L1_RED_PIN, 0);
+      analogWrite(L2_AMBER_PIN, 0);
+      analogWrite(L3_GREEN_PIN, 0);
       break;
   }
 }
@@ -70,11 +76,8 @@ static void led_init() {
   pinMode(L2_AMBER_PIN, OUTPUT);
   pinMode(L3_GREEN_PIN, OUTPUT);
   pinMode(RGB_RED_PIN, OUTPUT);
-  digitalWrite(RGB_RED_PIN, HIGH);
   pinMode(RGB_GREEN_PIN, OUTPUT);
-  digitalWrite(RGB_GREEN_PIN, HIGH);
   pinMode(RGB_BLUE_PIN, OUTPUT);
-  digitalWrite(RGB_BLUE_PIN, HIGH);
 
   led_colour(RED);
   delay(500);

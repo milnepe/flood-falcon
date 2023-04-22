@@ -36,10 +36,10 @@
 //#define CS_PIN          10
 //#define BUSY_PIN        7
 
-#define RST_PIN         6
+#define RST_PIN         14
 #define DC_PIN          7
 #define CS_PIN          8
-#define BUSY_PIN        5
+#define BUSY_PIN        4
 
 class EpdIf {
 public:
