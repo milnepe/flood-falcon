@@ -17,12 +17,15 @@ int FloodAPI::updateState(int state) {
       break;
     case SEVERE_FLOOD_WARNING:
       led_colour(RED);
+      buzzer_on();
       break;
     case FLOOD_WARNING:
       led_colour(RED);
+      buzzer_on();
       break;
     case FLOOD_ALERT:
       led_colour(AMBER);
+      buzzer_on();
       break;
     case NO_LONGER:
       led_colour(GREEN);
@@ -38,7 +41,7 @@ void FloodAPI::demo() {
   // Inject mock timestamp
   memcpy(warning.time_raised, "2023-01-01 00:01:00", DATESTR_LEN - 1);
   static int state = NONE;
-  warning.severityLevel = state;  
+  warning.severityLevel = state;
   Serial.println(warning.severityLevel);
   updateState(warning.severityLevel);
   switch (state) {
