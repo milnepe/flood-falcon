@@ -136,7 +136,7 @@ void FloodMagnetDisplay::updateDisplay() {
 
   _paint.Clear(UNCOLORED);
   if (demoOn) {
-    _paint.DrawStringAt(0, 0, "Demo Mode", &Font16, COLORED);
+    _paint.DrawStringAt(0, 0, "", &Font16, COLORED);
   } else if (wifiOn) {
     _paint.DrawStringAt(0, 0, "Wifi", &Font16, COLORED);
   } else {
