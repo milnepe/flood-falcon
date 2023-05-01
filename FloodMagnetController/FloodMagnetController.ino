@@ -41,8 +41,7 @@ FloodAPI myFloodAPI = FloodAPI();
 
 FloodMagnetDisplay epd = FloodMagnetDisplay(&myFloodAPI);
 
-int status = WL_IDLE_STATUS;
-unsigned long lastReconnectAttempt = 0;
+// int status = WL_IDLE_STATUS;
 
 EasyButton button1(B1_PIN);
 EasyButton button2(B2_PIN);
@@ -105,6 +104,7 @@ void loop() {
   // button5.read(); Read only in setup
   button6.read();
 
+  static int status = WL_IDLE_STATUS;
   if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
     rgb_colour(RED);
     epd.wifiOn = false;
@@ -118,10 +118,11 @@ void loop() {
     }
   }
   unsigned long now = millis();
-  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
+  static unsigned long lastApiAttemp = 0;
+  if ((now - lastApiAttemp > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
     mode = STD_MODE;  // Clear replay
     doUpdate();
-    lastReconnectAttempt = now;
+    lastApiAttemp = now;
   }
 }
 
@@ -135,11 +136,20 @@ void doUpdate() {
 void doDemo() {
   epd.demoOn = true;
   while (1) {
-    myFloodAPI.demo(DEMO_MODE);
-    epd.updateDisplay();
-    delay(2000);
-    buzzer_off();
-    delay(DEMO_INTERVAL);  // Delay between state change
+    button1.read();
+    button2.read();
+    button3.read();
+    button4.read();
+    // button5.read(); Read only in setup
+    button6.read();
+    unsigned long now = millis();
+    static unsigned long lastUpdate = 0;
+    if (now - lastUpdate > DEMO_INTERVAL) {
+      buzzer_off();
+      myFloodAPI.demo(DEMO_MODE);
+      epd.updateDisplay();
+      lastUpdate = millis();
+    }
   }
 }
 
