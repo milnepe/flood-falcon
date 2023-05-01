@@ -35,7 +35,7 @@ If you make use of this data please acknowledge this with the following attribut
 
 modes mode = STD_MODE;
 
-const char* soft_version = "0.3.1";
+const char* soft_version = "0.4.0";
 
 FloodAPI myFloodAPI = FloodAPI();
 
