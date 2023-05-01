@@ -19,29 +19,29 @@
 static void rgb_colour(int colour) {
   switch (colour) {
     case RED:
-      analogWrite(RGB_GREEN_PIN, 127);  // Half brightness
-      analogWrite(RGB_GREEN_PIN, 255);
-      digitalWrite(RGB_BLUE_PIN, HIGH);
+      analogWrite(RGB_RED_PIN, 127);  // Half brightness
+      analogWrite(RGB_GREEN_PIN, 0);
+      digitalWrite(RGB_BLUE_PIN, LOW);
       break;
     case GREEN:
-      analogWrite(RGB_RED_PIN, 255);
+      analogWrite(RGB_RED_PIN, 0);
       analogWrite(RGB_GREEN_PIN, 127);  // Half brightness
-      digitalWrite(RGB_BLUE_PIN, HIGH);
+      digitalWrite(RGB_BLUE_PIN, LOW);
       break;
     case BLUE:
-      analogWrite(RGB_RED_PIN, 255);
-      analogWrite(RGB_GREEN_PIN, 255);
-      digitalWrite(RGB_BLUE_PIN, LOW); // Full brightness
-      break;
-    case WHITE:
       analogWrite(RGB_RED_PIN, 0);
       analogWrite(RGB_GREEN_PIN, 0);
-      digitalWrite(RGB_BLUE_PIN, LOW);
+      digitalWrite(RGB_BLUE_PIN, HIGH);  // Full brightness
+      break;
+    case WHITE:
+      analogWrite(RGB_RED_PIN, 255);
+      analogWrite(RGB_GREEN_PIN, 255);
+      digitalWrite(RGB_BLUE_PIN, HIGH);
       break;
     default:  // White
-      analogWrite(RGB_GREEN_PIN, 0);
-      analogWrite(RGB_GREEN_PIN, 0);
-      digitalWrite(RGB_BLUE_PIN, LOW);
+      analogWrite(RGB_RED_PIN, 255);
+      analogWrite(RGB_GREEN_PIN, 255);
+      digitalWrite(RGB_BLUE_PIN, HIGH);
       break;
   }
 }
