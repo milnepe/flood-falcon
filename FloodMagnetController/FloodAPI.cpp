@@ -9,52 +9,44 @@ void FloodAPI::init() {
   state = INIT;
 }
 
-int FloodAPI::updateState(int state, int mymode) {
-  switch (state) {
-    case NONE:
-      led_colour(GREEN);
-      break;
-    case SEVERE_FLOOD_WARNING:
-      led_colour(RED);
-      buzzer_on();
-      if (mymode == DEMO_MODE) {
-        delay(2000);
-        buzzer_off();
-      }
-      break;
-    case FLOOD_WARNING:
-      led_colour(RED);
-      buzzer_on();
-      if (mymode == DEMO_MODE) {
-        delay(2000);
-        buzzer_off();
-      }      
-      break;
-    case FLOOD_ALERT:
-      led_colour(AMBER);
-      buzzer_on();
-      if (mymode == DEMO_MODE) {
-        delay(2000);
-        buzzer_off();
-      }      
-      break;
-    case NO_LONGER:
-      led_colour(GREEN);
-      break;
-    default:
-      break;
+int FloodAPI::updateState(warning_levels state) {
+  static warning_levels previous_state = NONE;
+  if (state != previous_state) {
+    previous_state = state;
+    switch (state) {
+      case NONE:
+        led_colour(GREEN);
+        break;
+      case SEVERE_FLOOD_WARNING:
+        led_colour(RED);
+        buzzer_on();
+        break;
+      case FLOOD_WARNING:
+        led_colour(RED);
+        buzzer_on();
+        break;
+      case FLOOD_ALERT:
+        led_colour(AMBER);
+        buzzer_on();
+        break;
+      case NO_LONGER:
+        led_colour(GREEN);
+        break;
+      default:
+        break;
+    }
   }
   return state;
 }
 
 // Advance through states and wrap around
-void FloodAPI::demo() {
+void FloodAPI::demo(modes m) {
   // Inject mock timestamp
   memcpy(warning.time_raised, "2023-01-01 00:01:00", DATESTR_LEN - 1);
-  static int state = NONE;
+  static warning_levels state = NONE;
   warning.severityLevel = state;
   Serial.println(warning.severityLevel);
-  updateState(warning.severityLevel, DEMO_MODE);
+  updateState(warning.severityLevel);
   switch (state) {
     case NONE:
       state = FLOOD_ALERT;

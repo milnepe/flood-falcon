@@ -33,7 +33,7 @@ If you make use of this data please acknowledge this with the following attribut
 #define B5_PIN 17
 #define B6_PIN 16
 
-enum mode mymode = STD_MODE;
+modes mode = STD_MODE;
 
 const char* soft_version = "0.3.1";
 
@@ -88,7 +88,7 @@ void setup() {
   // Hold down B5 while pressing reset to enter demo mode
   // Press reset to exit back to standard mode
   if (button5.isPressed()) {
-    mymode = DEMO_MODE;
+    mode = DEMO_MODE;
     rgb_colour(RED);
     Serial.println("Starting demo mode...");
     doDemo();
@@ -118,8 +118,8 @@ void loop() {
     }
   }
   unsigned long now = millis();
-  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mymode == REPLAY_MODE)) {
-    mymode = STD_MODE;  // Clear replay
+  if ((now - lastReconnectAttempt > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
+    mode = STD_MODE;  // Clear replay
     doUpdate();
     lastReconnectAttempt = now;
   }
@@ -127,7 +127,7 @@ void loop() {
 
 void doUpdate() {
   myFloodAPI.getData();
-  myFloodAPI.updateState(myFloodAPI.warning.severityLevel, mymode);
+  myFloodAPI.updateState(myFloodAPI.warning.severityLevel);
   epd.updateDisplay();
   printData();
 }
@@ -135,8 +135,10 @@ void doUpdate() {
 void doDemo() {
   epd.demoOn = true;
   while (1) {
-    myFloodAPI.demo();
+    myFloodAPI.demo(DEMO_MODE);
     epd.updateDisplay();
+    delay(2000);
+    buzzer_off();
     delay(DEMO_INTERVAL);  // Delay between state change
   }
 }
@@ -174,8 +176,13 @@ void flood() {
 
 void replay() {
   Serial.println("B4 button pressed...");
-  mymode = REPLAY_MODE;
+  mode = REPLAY_MODE;
   bip();
+}
+
+void buzzerOff() {
+  Serial.println("B4 button held...");
+  buzzer_off();
 }
 
 void clock_sync_ap_mode() {
