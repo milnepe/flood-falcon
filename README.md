@@ -29,20 +29,26 @@ Click on the warning you are interested in for example Keswick Campsite:
 
 The last part of the URL above is the flood warning area code in this example it is 011FWFNC6KC
 
-If there is no flood warning for your area you can find the url from your Lat / Long cordinates.
+If there is no flood warning for your area you can find the url from your Lat / Long coordinates.
 For example Witney in Oxfordshire has lat: 51.7859° N, long: 1.4851° W
 North is positive, West is negative.
+
 Put these into the following URL 
+
 http://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=y&long=x&dist=d
-Were:
+
+Where:
+
 y is the lat,
+
 x is the long
+
 and d is the distance in km from your location. Start with close distances and use larger values if you don't get any results.
 
-So for witney the URL is (Note the negative W cordinate):
+So for Witney the URL is (Note the negative W cordinate):
 https://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=51.7859&long=-1.4851&dist=0.5
 
-Paste this into a browser and you will get a list of possible Flood Arears. Here's the result for Witney:
+Paste this into a browser and you will get a list of possible Flood Areas. Here's the result for Witney:
 ```
   "items" : [ { 
     "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061FWF10Witney" ,
@@ -75,7 +81,7 @@ Paste this into a browser and you will get a list of possible Flood Arears. Here
   }
 ...
 ```
-Use the "description" key to find the nearest arear to you and then take the "@id" url for that area. For example:
+Use the "description" key to find the nearest area to you and then take the "@id" url for that area. For example:
 "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061FWF10Witney"
 
 Now take the last part of the "@id" url which is the key for that area, in this case "061FWF10Witney"
