@@ -37,15 +37,9 @@ Put these into the following URL
 
 http://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=y&long=x&dist=d
 
-Where:
+Where: y is the lat, x is the long and d is the distance in km from your location. Start with close distances and use larger values if you don't get any results.
 
-y is the lat,
-
-x is the long
-
-and d is the distance in km from your location. Start with close distances and use larger values if you don't get any results.
-
-So for Witney the URL is (Note the negative W cordinate):
+So for Witney the URL is (Note the negative W coordinate):
 https://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=51.7859&long=-1.4851&dist=0.5
 
 Paste this into a browser and you will get a list of possible Flood Areas. Here's the result for Witney:
