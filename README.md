@@ -29,12 +29,69 @@ Click on the warning you are interested in for example Keswick Campsite:
 
 The last part of the URL above is the flood warning area code in this example it is 011FWFNC6KC
 
+If there is no flood warning for your area you can find the url from your Lat / Long cordinates.
+For example Witney in Oxfordshire has lat: 51.7859° N, long: 1.4851° W
+North is positive, West is negative.
+Put these into the following URL 
+http://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=y&long=x&dist=d
+Were:
+y is the lat,
+x is the long
+and d is the distance in km from your location. Start with close distances and use larger values if you don't get any results.
+
+So for witney the URL is (Note the negative W cordinate):
+https://environment.data.gov.uk/flood-monitoring/id/floodAreas?lat=51.7859&long=-1.4851&dist=0.5
+
+Paste this into a browser and you will get a list of possible Flood Arears. Here's the result for Witney:
+```
+  "items" : [ { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061FWF10Witney" ,
+    "county" : "Oxfordshire" ,
+    "description" : "River Windrush at Witney and Ducklington down to and including Hardwick" ,
+    "eaAreaName" : "Thames" ,
+    "floodWatchArea" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061WAF10Windrush" ,
+    "fwdCode" : "061FWF10Witney" ,
+    "label" : "River Windrush at Witney and Ducklington" ,
+    "lat" : 51.75773 ,
+    "long" : -1.45314 ,
+    "notation" : "061FWF10Witney" ,
+    "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061FWF10Witney/polygon" ,
+    "quickDialNumber" : "171073" ,
+    "riverOrSea" : "River Windrush"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061WAF10Windrush" ,
+    "county" : "Gloucestershire, Oxfordshire" ,
+    "description" : "River Windrush from Bourton to Newbridge including Burford, Asthall, Minster Lovell, Crawley, Witney, Ducklington, Rack End and Standlake" ,
+    "eaAreaName" : "Thames" ,
+    "fwdCode" : "061WAF10Windrush" ,
+    "label" : "River Windrush from Bourton to Newbridge" ,
+    "lat" : 51.82888 ,
+    "long" : -1.65351 ,
+    "notation" : "061WAF10Windrush" ,
+    "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061WAF10Windrush/polygon" ,
+    "quickDialNumber" : "171075" ,
+    "riverOrSea" : "River Windrush"
+  }
+...
+```
+Use the "description" key to find the nearest arear to you and then take the "@id" url for that area. For example:
+"@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/061FWF10Witney"
+
+Now take the last part of the "@id" url which is the key for that area, in this case "061FWF10Witney"
+
+Copy and paste the key into the magnet_config.h file:
+```
+// Your flood area code from Gov.co.uk Flood Warning Service
+#define AREA_CODE "061FWF10Witney"
+```
+
 ## Testing
 You can test the API for your flood area by making a request in your browser to the following URI:
 http://environment.data.gov.uk/flood-monitoring/id/floods/{your-flood-area-code}
 
-So in the example above for the Keswick Campsite use this URI:
-[https://check-for-flooding.service.gov.uk/target-area/011FWFNC6KC](https://check-for-flooding.service.gov.uk/target-area/011FWFNC6KC)
+So in the example above for the Witney use this URI:
+[https://check-for-flooding.service.gov.uk/target-area/061FWF10Witney](https://check-for-flooding.service.gov.uk/target-area/061FWF10Witney)
 
 This will return a JSON object with all the flood information for that area.
 
