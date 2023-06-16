@@ -49,24 +49,24 @@ static void rgb_colour(int colour) {
 static void led_colour(int colour) {
   switch (colour) {
     case RED:
-      analogWrite(L1_RED_PIN, 255);
-      analogWrite(L2_AMBER_PIN, 0);
-      analogWrite(L3_GREEN_PIN, 0);
+      digitalWrite(L1_RED_PIN, HIGH);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, LOW);
       break;
     case AMBER:
-      analogWrite(L1_RED_PIN, 0);
-      analogWrite(L2_AMBER_PIN, 255);
-      analogWrite(L3_GREEN_PIN, 0);
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, HIGH);
+      digitalWrite(L3_GREEN_PIN, LOW);
       break;
     case GREEN:
-      analogWrite(L1_RED_PIN, 0);
-      analogWrite(L2_AMBER_PIN, 0);
-      analogWrite(L3_GREEN_PIN, 255);
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, HIGH);
       break;
     default:  // All off
-      analogWrite(L1_RED_PIN, 0);
-      analogWrite(L2_AMBER_PIN, 0);
-      analogWrite(L3_GREEN_PIN, 0);
+      digitalWrite(L1_RED_PIN, LOW);
+      digitalWrite(L2_AMBER_PIN, LOW);
+      digitalWrite(L3_GREEN_PIN, LOW);
       break;
   }
 }
