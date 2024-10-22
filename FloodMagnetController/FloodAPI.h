@@ -8,7 +8,7 @@
 #include "buzzer.h"
 
 #define DATESTR_LEN 17     // "2022-12-19T15:20:31" -> "2022-12-19 15:20"
-#define FLOOD_AREA_LEN 12  // Flood area description
+#define FLOOD_AREA_LEN 20  // Flood area description
 
 enum warning_levels { INIT = -1,
                       NONE,

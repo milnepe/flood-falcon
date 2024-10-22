@@ -67,16 +67,16 @@ void FloodAPI::demo(modes m) {
 }
 
 void FloodAPI::getData() {
-  WiFiClient client;
+  WiFiSSLClient client;
   // Connect to host
   Serial.println("Connecting to environment.data.gov.uk");
-  if (!client.connect("environment.data.gov.uk", 80)) {
+  if (!client.connect("environment.data.gov.uk", 443)) {
     Serial.println("Failed to connect to server");
     return;
   }
 
   // Send HTTP request
-  client.println("GET /flood-monitoring/id/floodAreas/" AREA_CODE " HTTP/1.0");
+  client.println("GET /flood-monitoring/id/floodAreas/" AREA_CODE " HTTP/1.1");
   client.println("Host: environment.data.gov.uk");
   client.println("Connection: close");
   client.println();
@@ -85,11 +85,14 @@ void FloodAPI::getData() {
   char status[32] = { 0 };
   client.readBytesUntil('\r', status, sizeof(status));
   // should be "HTTP/1.0 200 OK"
+  Serial.println(status);
   if (memcmp(status + 9, "200 OK", 6) != 0) {
-    Serial.print("Unexpected HTTP status");
-    Serial.println(status);
-    client.stop();
-    return;
+    if (memcmp(status + 9, "301 Moved Permanently", 21) != 0 ){
+      Serial.print("Unexpected HTTP status");
+      Serial.println(status);
+      client.stop();
+      return;
+    }
   }
 
   // Skip response headers
