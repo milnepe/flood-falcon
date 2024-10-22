@@ -87,12 +87,10 @@ void FloodAPI::getData() {
   // should be "HTTP/1.0 200 OK"
   Serial.println(status);
   if (memcmp(status + 9, "200 OK", 6) != 0) {
-    if (memcmp(status + 9, "301 Moved Permanently", 21) != 0 ){
-      Serial.print("Unexpected HTTP status");
-      Serial.println(status);
-      client.stop();
-      return;
-    }
+    Serial.print("Unexpected HTTP status");
+    Serial.println(status);
+    client.stop();
+    return;
   }
 
   // Skip response headers
