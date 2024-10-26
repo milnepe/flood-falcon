@@ -10,12 +10,14 @@ void FloodAPI::init() {
 }
 
 int FloodAPI::updateState(warning_levels state) {
-  static warning_levels previous_state = NONE;
+  static warning_levels previous_state = INIT;
+  // static warning_levels previous_state = NONE;
   if (state != previous_state) {
     previous_state = state;
     switch (state) {
-      case NONE:
-        led_colour(GREEN);
+      // case NONE:
+      case INIT:
+        // led_colour(GREEN);
         break;
       case SEVERE_FLOOD_WARNING:
         led_colour(RED);

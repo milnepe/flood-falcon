@@ -14,6 +14,7 @@
 #define GREEN 3
 #define BLUE 4
 #define WHITE 5
+#define OFF 6
 
 // Common anode - 0 is on 255 is off
 static void rgb_colour(int colour) {
@@ -85,6 +86,7 @@ static void led_init() {
   delay(500);
   led_colour(GREEN);
   delay(500);
+  led_colour(OFF);
 
   rgb_colour(RED);
   delay(500);
