@@ -105,7 +105,6 @@ void loop() {
   // button5.read(); Read only in setup
   button6.read();
 
-  static int status = WL_IDLE_STATUS;
   if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
     delay(5000);
     rgb_colour(RED);
