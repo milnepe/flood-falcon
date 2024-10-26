@@ -32,6 +32,7 @@ class FloodMagnetDisplay {
   void updateDisplay(void);
   void showGreeting(void);
   void connectionError(void);
+  void apiError(void);
 };
 
 #endif

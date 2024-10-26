@@ -34,7 +34,7 @@ public:
 public:
   void init();
   int updateState(warning_levels state);
-  void getData();
+  int getData();
   void demo(modes m);
 };
 

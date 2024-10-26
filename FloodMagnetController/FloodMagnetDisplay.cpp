@@ -68,6 +68,22 @@ void FloodMagnetDisplay::connectionError(void) {
   _epd.DisplayFrame_Partial();
 }
 
+void FloodMagnetDisplay::apiError(void) {
+  _paint.SetWidth(120);
+  _paint.SetHeight(32);
+  _paint.SetRotate(ROTATE_180);
+
+  _paint.Clear(UNCOLORED);
+  _paint.DrawStringAt(0, 4, "API", &Font16, COLORED);
+  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 140, _paint.GetWidth(), _paint.GetHeight());
+
+  _paint.Clear(UNCOLORED);
+  _paint.DrawStringAt(0, 4, "Error", &Font16, COLORED);
+  _epd.SetFrameMemory_Partial(_paint.GetImage(), 0, 120, _paint.GetWidth(), _paint.GetHeight());
+
+  _epd.DisplayFrame_Partial();
+}
+
 void FloodMagnetDisplay::updateDisplay() {
   Serial.println("Updating display...");
   int severityLevel = _magnet->warning.severityLevel;

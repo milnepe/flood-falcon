@@ -68,13 +68,13 @@ void FloodAPI::demo(modes m) {
   }
 }
 
-void FloodAPI::getData() {
+int FloodAPI::getData() {
   WiFiSSLClient client;
   // Connect to host
   Serial.println("Connecting to environment.data.gov.uk");
   if (!client.connect("environment.data.gov.uk", 443)) {
     Serial.println("Failed to connect to server");
-    return;
+    return 1;
   }
 
   // Send HTTP request
@@ -92,7 +92,7 @@ void FloodAPI::getData() {
     Serial.print("Unexpected HTTP status");
     Serial.println(status);
     client.stop();
-    return;
+    return 0;
   }
 
   // Skip response headers
@@ -114,7 +114,7 @@ void FloodAPI::getData() {
   if (error) {
     Serial.print("deserializeJson() failed: ");
     Serial.println(error.c_str());
-    return;
+    return -1;
   }
 
   // Update warning struct

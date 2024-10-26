@@ -133,10 +133,15 @@ void loop() {
 }
 
 void doUpdate() {
-  myFloodAPI.getData();
-  myFloodAPI.updateState(myFloodAPI.warning.severityLevel);
-  epd.updateDisplay();
-  printData();
+  int result = myFloodAPI.getData();
+  if (result) {
+    myFloodAPI.updateState(myFloodAPI.warning.severityLevel);
+    epd.updateDisplay();
+    printData();
+  } 
+  else {
+    epd.apiError();
+  }
 }
 
 void doDemo() {
