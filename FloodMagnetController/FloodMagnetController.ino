@@ -120,10 +120,12 @@ void loop() {
   }
   unsigned long now = millis();
   static unsigned long lastApiAttemp = 0;
-  if ((now - lastApiAttemp > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
-    mode = STD_MODE;  // Clear replay
-    doUpdate();
-    lastApiAttemp = now;
+  if (WiFi.status() == WL_CONNECTED)  {
+    if ((now - lastApiAttemp > ALERT_INTERVAL) || (mode == REPLAY_MODE)) {
+      mode = STD_MODE;  // Clear replay
+      doUpdate();
+      lastApiAttemp = now;
+    }
   }
 }
 
@@ -166,6 +168,8 @@ int reconnectWiFi() {
   WiFi.disconnect();  // Force a disconnect
   delay(1000);
   WiFi.begin(SECRET_SSID, SECRET_PASS);
+  Serial.print("Wifi status: ");
+  Serial.println(WiFi.status());
   return WiFi.status();
 }
 
