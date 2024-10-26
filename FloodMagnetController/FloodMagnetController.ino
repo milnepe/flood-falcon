@@ -110,7 +110,8 @@ void loop() {
     rgb_colour(RED);
     epd.wifiOn = false;
     reconnectWiFi();
-    delay(2000);
+    epd.connectionError();
+    delay(5000);
     if (WiFi.status() == WL_CONNECTED) {
       rgb_colour(GREEN);
       epd.wifiOn = true;
