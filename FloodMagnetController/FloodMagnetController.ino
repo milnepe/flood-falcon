@@ -107,16 +107,18 @@ void loop() {
 
   static int status = WL_IDLE_STATUS;
   if (WiFi.status() != WL_CONNECTED) {  // Connect wifi
+    delay(5000);
     rgb_colour(RED);
     epd.wifiOn = false;
     reconnectWiFi();
-    epd.connectionError();
-    delay(5000);
     if (WiFi.status() == WL_CONNECTED) {
       rgb_colour(GREEN);
       epd.wifiOn = true;
       Serial.println("Wifi connected...");
       doUpdate();  // Initial update
+    }
+    else {
+      epd.connectionError();
     }
   }
   unsigned long now = millis();
